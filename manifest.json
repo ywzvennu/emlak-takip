@@ -22,7 +22,12 @@
   "content_scripts": [
     {
       "matches": ["https://www.sahibinden.com/ilan/*"],
-      "js": ["src/content/capture.js", "src/content/inject.js"],
+      "js": [
+        "src/providers/registry.js",
+        "src/providers/sahibinden.js",
+        "src/content/capture.js",
+        "src/content/inject.js"
+      ],
       "css": ["src/content/inject.css"],
       "run_at": "document_idle"
     }

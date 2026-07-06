@@ -72,7 +72,7 @@
   (async () => {
     const payload = captureIlan();
     if (!payload) return;
-    const check = await send({ type: "CHECK_SAVED", ilanNo: payload.ilanNo });
+    const check = await send({ type: "CHECK_SAVED", key: payload.key });
     if (check && check.ok) setButton(check.saved);
     send({ type: "SEEN_ILAN", payload });
   })();

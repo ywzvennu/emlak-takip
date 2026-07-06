@@ -94,7 +94,7 @@ async function main() {
 
   let saved = false;
   if (payload) {
-    const existing = await store.getByIlanNo(payload.ilanNo);
+    const existing = await store.getByKey(payload.key);
     saved = !!existing;
   }
   render(payload, saved);

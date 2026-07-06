@@ -44,8 +44,11 @@ _locales/
   tr/messages.json     # Turkish (default)
   en/messages.json     # English
 src/
+  providers/
+    registry.js    # provider registry shared via the content-script global
+    sahibinden.js  # Sahibinden adapter (URL slug + meta + DOM, robust fallbacks)
   content/
-    capture.js     # page parsing (URL slug + meta + DOM), with robust fallbacks
+    capture.js     # generic dispatcher → picks the matching provider, parses
     inject.js      # floating save button, popup CAPTURE handler, price-seen ping
     inject.css
   background/
@@ -80,14 +83,18 @@ To add a language, drop in `_locales/<lang>/messages.json` with the same keys
 
 ## Notes on parsing
 
-The URL/`<meta>`-derived fields (listing id, category, type, title, image) are
+Each site lives behind a **provider adapter** in `src/providers/`. The
+URL/`<meta>`-derived fields (listing id, category, type, title, image) are
 stable. The DOM selectors for **price**, **location** and the **attribute list**
 are the parts most likely to break if a site changes its markup — they're all
-collected in the `SELECTORS` object in `src/content/capture.js`, each with a
-fallback, so adjusting them is a one-place edit.
+collected in the `SELECTORS` object inside the provider (e.g.
+`src/providers/sahibinden.js`), each with a fallback, so adjusting them is a
+one-place edit. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
+provider interface and the normalized record schema.
 
 ## Roadmap
 
-- Pluggable provider adapters so additional listing sites can be supported.
+- More provider adapters (Hepsiemlak, Emlakjet).
 - `chrome.storage.sync` toggle for cross-device sync.
 - Optional periodic price re-check via an alarm.
+- Map view of saved listings.

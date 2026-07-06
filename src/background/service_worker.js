@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           break;
         }
         case "CHECK_SAVED": {
-          const record = await store.getByIlanNo(msg.ilanNo);
+          const record = await store.getByKey(msg.key);
           sendResponse({ ok: true, saved: !!record, record });
           break;
         }

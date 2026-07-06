@@ -13,7 +13,9 @@ beforeEach(() => {
 
 function payload(overrides = {}) {
   return {
+    provider: "sahibinden",
     ilanNo: "12345",
+    key: "sahibinden:12345",
     url: "https://www.sahibinden.com/ilan/emlak-konut-satilik-daire-12345/detay",
     slug: "emlak-konut-satilik-daire",
     title: "3+1 Satılık Daire",
@@ -31,7 +33,8 @@ function payload(overrides = {}) {
 test("upsert creates a record with user-field defaults and initial price point", async () => {
   const { record, created } = await store.upsert(payload());
   assert.equal(created, true);
-  assert.equal(record.ilanNo, "12345");
+  assert.equal(record.key, "sahibinden:12345");
+  assert.equal(record.provider, "sahibinden");
   assert.equal(record.notes, "");
   assert.deepEqual(record.tags, []);
   assert.equal(record.status, "kaydedildi");
@@ -44,7 +47,7 @@ test("upsert creates a record with user-field defaults and initial price point",
 
 test("upsert refreshes captured fields but preserves user-authored fields", async () => {
   await store.upsert(payload());
-  await store.updateRecord("12345", {
+  await store.updateByKey("sahibinden:12345", {
     notes: "call agent",
     tags: ["favorite"],
     status: "ilgileniliyor",
@@ -65,14 +68,14 @@ test("upsert appends a price point only when the price changes", async () => {
   await store.upsert(payload());
   // same price -> no new point
   await store.upsert(payload());
-  let rec = await store.getByIlanNo("12345");
+  let rec = await store.getByKey("sahibinden:12345");
   assert.equal(rec.priceHistory.length, 1);
 
   // changed price -> new point
   await store.upsert(
     payload({ price: { amount: 2400000, currency: "TL", raw: "2.400.000 TL" } })
   );
-  rec = await store.getByIlanNo("12345");
+  rec = await store.getByKey("sahibinden:12345");
   assert.equal(rec.priceHistory.length, 2);
   assert.equal(rec.price.amount, 2400000);
 });
@@ -89,40 +92,72 @@ test("recordSeen only tracks saved listings and grows price history", async () =
   assert.equal(res.tracked, true);
   assert.equal(res.priceChanged, true);
 
-  const rec = await store.getByIlanNo("12345");
+  const rec = await store.getByKey("sahibinden:12345");
   assert.equal(rec.priceHistory.length, 2);
   assert.equal(rec.price.amount, 2300000);
 });
 
-test("remove deletes by ilanNo", async () => {
+test("removeByKey deletes by composite key", async () => {
   await store.upsert(payload());
-  assert.equal(await store.remove("12345"), true);
-  assert.equal(await store.remove("12345"), false);
+  assert.equal(await store.removeByKey("sahibinden:12345"), true);
+  assert.equal(await store.removeByKey("sahibinden:12345"), false);
   assert.equal((await store.getAll()).length, 0);
 });
 
-test("importListings merges by ilanNo and reports added count", async () => {
+test("same ilanNo on different providers does not collide", async () => {
+  await store.upsert(payload({ provider: "sahibinden", key: undefined }));
+  await store.upsert(
+    payload({ provider: "hepsiemlak", key: undefined, title: "Other site" })
+  );
+
+  const all = await store.getAll();
+  assert.equal(all.length, 2);
+  assert.equal(
+    (await store.getByKey("sahibinden:12345")).title,
+    "3+1 Satılık Daire"
+  );
+  assert.equal((await store.getByKey("hepsiemlak:12345")).title, "Other site");
+});
+
+test("normalize backfills provider and key on legacy records", () => {
+  const legacy = { ilanNo: "999", title: "old" }; // no provider/key
+  const migrated = store.normalize(legacy);
+  assert.equal(migrated.provider, "sahibinden");
+  assert.equal(migrated.key, "sahibinden:999");
+});
+
+test("legacy records without key are keyed and updatable after read", async () => {
+  const { backing } = installChromeMock();
+  backing.ilanlar = [{ ilanNo: "555", title: "legacy", status: "kaydedildi" }];
+
+  const rec = await store.getByKey("sahibinden:555");
+  assert.ok(rec, "legacy record found by derived key");
+  const updated = await store.updateByKey("sahibinden:555", {
+    status: "elendi",
+  });
+  assert.equal(updated.status, "elendi");
+});
+
+test("importListings merges by key and reports added count", async () => {
   await store.upsert(payload());
   const res = await store.importListings([
-    { ilanNo: "12345", notes: "merged note" }, // existing -> merge
-    { ilanNo: "99999", title: "Another" }, // new
+    { ilanNo: "12345", provider: "sahibinden", notes: "merged note" }, // existing
+    { ilanNo: "99999", provider: "sahibinden", title: "Another" }, // new
     { title: "no id, skipped" },
   ]);
   assert.equal(res.total, 2);
   assert.equal(res.added, 1);
 
-  const merged = await store.getByIlanNo("12345");
+  const merged = await store.getByKey("sahibinden:12345");
   assert.equal(merged.notes, "merged note");
 });
 
 test("importListings with replace clears existing data first", async () => {
   await store.upsert(payload());
   const res = await store.importListings(
-    [{ ilanNo: "77777", title: "Fresh" }],
-    {
-      replace: true,
-    }
+    [{ ilanNo: "77777", provider: "sahibinden", title: "Fresh" }],
+    { replace: true }
   );
   assert.equal(res.total, 1);
-  assert.equal(await store.getByIlanNo("12345"), null);
+  assert.equal(await store.getByKey("sahibinden:12345"), null);
 });

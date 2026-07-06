@@ -181,7 +181,7 @@ function render() {
 
 function buildCard(tpl, r) {
   const node = tpl.content.firstElementChild.cloneNode(true);
-  node.dataset.ilan = r.ilanNo;
+  node.dataset.key = r.key;
 
   const thumbA = node.querySelector(".card-thumb");
   thumbA.href = r.url;
@@ -315,10 +315,10 @@ function wireGrid() {
   grid.addEventListener("change", async (e) => {
     const card = e.target.closest(".card");
     if (!card) return;
-    const ilanNo = card.dataset.ilan;
+    const key = card.dataset.key;
     if (e.target.classList.contains("status-sel")) {
-      await store.updateRecord(ilanNo, { status: e.target.value });
-      const rec = state.all.find((x) => x.ilanNo === ilanNo);
+      await store.updateByKey(key, { status: e.target.value });
+      const rec = state.all.find((x) => x.key === key);
       if (rec) rec.status = e.target.value;
     }
   });
@@ -329,19 +329,19 @@ function wireGrid() {
     async (e) => {
       const card = e.target.closest(".card");
       if (!card) return;
-      const ilanNo = card.dataset.ilan;
+      const key = card.dataset.key;
       if (e.target.classList.contains("tags-input")) {
         const tags = e.target.value
           .split(",")
           .map((t) => t.trim())
           .filter(Boolean);
-        await store.updateRecord(ilanNo, { tags });
-        const rec = state.all.find((x) => x.ilanNo === ilanNo);
+        await store.updateByKey(key, { tags });
+        const rec = state.all.find((x) => x.key === key);
         if (rec) rec.tags = tags;
         rebuildFilters();
       } else if (e.target.classList.contains("notes")) {
-        await store.updateRecord(ilanNo, { notes: e.target.value });
-        const rec = state.all.find((x) => x.ilanNo === ilanNo);
+        await store.updateByKey(key, { notes: e.target.value });
+        const rec = state.all.find((x) => x.key === key);
         if (rec) rec.notes = e.target.value;
       }
     },
@@ -351,10 +351,10 @@ function wireGrid() {
   grid.addEventListener("click", async (e) => {
     const card = e.target.closest(".card");
     if (!card) return;
-    const ilanNo = card.dataset.ilan;
+    const key = card.dataset.key;
     if (e.target.classList.contains("del-btn")) {
       if (!confirm(t("confirmDelete"))) return;
-      await store.remove(ilanNo);
+      await store.removeByKey(key);
       await reload();
     } else if (e.target.classList.contains("history-btn")) {
       const box = card.querySelector(".history");
@@ -362,7 +362,7 @@ function wireGrid() {
       if (!box.classList.contains("hidden")) {
         renderHistory(
           box,
-          state.all.find((x) => x.ilanNo === ilanNo)
+          state.all.find((x) => x.key === key)
         );
       }
     }
@@ -472,7 +472,7 @@ function wireIo() {
 // live-update if another surface (popup / content script) changes storage
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && changes.ilanlar) {
-    state.all = changes.ilanlar.newValue || [];
+    state.all = store.normalizeList(changes.ilanlar.newValue || []);
     rebuildFilters();
     render();
   }

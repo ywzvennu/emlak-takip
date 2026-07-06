@@ -1,11 +1,14 @@
 // Storage / data layer.
 //
-// Today this is backed by chrome.storage.local (single browser). It is written
-// so that swapping in chrome.storage.sync or a remote backend later only means
-// changing `read`/`write` — nothing else in the extension touches storage
-// directly. Imported by the background service worker, the popup and the
-// dashboard (all extension pages with storage access). Content scripts do NOT
-// import this; they message the background worker instead.
+// Backed by chrome.storage.local. It is the only file that touches storage, so
+// swapping in chrome.storage.sync or a remote backend later means changing just
+// `read`/`write`. Imported by the background service worker, the popup and the
+// dashboard. Content scripts do NOT import this; they message the worker.
+//
+// Identity: records are keyed by a composite `key` = `${provider}:${ilanNo}`,
+// so listings that happen to share a numeric id across different sites never
+// collide. Legacy records (pre-provider) are migrated on read: they get
+// provider "sahibinden" and a derived key.
 
 const KEY = "ilanlar";
 
@@ -20,9 +23,30 @@ export const STATUS_VALUES = [
 export const CATEGORY_VALUES = ["konut", "ticari", "arsa", "diger"];
 export const TYPE_VALUES = ["satilik", "kiralik"];
 
+const DEFAULT_PROVIDER = "sahibinden";
+
+export function keyOf(provider, ilanNo) {
+  return `${provider || DEFAULT_PROVIDER}:${ilanNo}`;
+}
+
+function recordKey(rec) {
+  return rec.key || keyOf(rec.provider, rec.ilanNo);
+}
+
+// Backfill provider/key on legacy records so old data keeps working.
+export function normalize(rec) {
+  if (!rec) return rec;
+  const provider = rec.provider || DEFAULT_PROVIDER;
+  return { ...rec, provider, key: rec.key || keyOf(provider, rec.ilanNo) };
+}
+
+export function normalizeList(list) {
+  return Array.isArray(list) ? list.map(normalize) : [];
+}
+
 async function read() {
   const data = await chrome.storage.local.get(KEY);
-  return Array.isArray(data[KEY]) ? data[KEY] : [];
+  return normalizeList(data[KEY]);
 }
 
 async function write(list) {
@@ -33,9 +57,9 @@ export async function getAll() {
   return read();
 }
 
-export async function getByIlanNo(ilanNo) {
+export async function getByKey(key) {
   const list = await read();
-  return list.find((x) => x.ilanNo === ilanNo) || null;
+  return list.find((x) => x.key === key) || null;
 }
 
 function pricePoint(price, at) {
@@ -61,11 +85,14 @@ function hasNewPrice(record, price) {
 export async function upsert(payload) {
   const list = await read();
   const now = Date.now();
-  const idx = list.findIndex((x) => x.ilanNo === payload.ilanNo);
+  const key = recordKey(normalize(payload));
+  const idx = list.findIndex((x) => x.key === key);
 
   if (idx === -1) {
     const record = {
       ...payload,
+      provider: payload.provider || DEFAULT_PROVIDER,
+      key,
       notes: "",
       tags: [],
       status: "kaydedildi",
@@ -115,7 +142,8 @@ export async function upsert(payload) {
 // history without the user re-saving. Returns { tracked, priceChanged }.
 export async function recordSeen(payload) {
   const list = await read();
-  const idx = list.findIndex((x) => x.ilanNo === payload.ilanNo);
+  const key = recordKey(normalize(payload));
+  const idx = list.findIndex((x) => x.key === key);
   if (idx === -1) return { tracked: false, priceChanged: false };
 
   const existing = list[idx];
@@ -135,18 +163,18 @@ export async function recordSeen(payload) {
   return { tracked: true, priceChanged };
 }
 
-export async function updateRecord(ilanNo, patch) {
+export async function updateByKey(key, patch) {
   const list = await read();
-  const idx = list.findIndex((x) => x.ilanNo === ilanNo);
+  const idx = list.findIndex((x) => x.key === key);
   if (idx === -1) return null;
   list[idx] = { ...list[idx], ...patch, updatedAt: Date.now() };
   await write(list);
   return list[idx];
 }
 
-export async function remove(ilanNo) {
+export async function removeByKey(key) {
   const list = await read();
-  const next = list.filter((x) => x.ilanNo !== ilanNo);
+  const next = list.filter((x) => x.key !== key);
   await write(next);
   return next.length !== list.length;
 }
@@ -155,17 +183,18 @@ export async function clearAll() {
   await write([]);
 }
 
-// Merge imported records (from a JSON backup) into current data by ilanNo.
+// Merge imported records (from a JSON backup) into current data by key.
 export async function importListings(incoming, { replace = false } = {}) {
   const current = replace ? [] : await read();
-  const byId = new Map(current.map((x) => [x.ilanNo, x]));
+  const byKey = new Map(current.map((x) => [x.key, x]));
   let added = 0;
-  for (const rec of incoming) {
-    if (!rec || !rec.ilanNo) continue;
-    if (!byId.has(rec.ilanNo)) added += 1;
-    byId.set(rec.ilanNo, { ...(byId.get(rec.ilanNo) || {}), ...rec });
+  for (const raw of incoming) {
+    if (!raw || !raw.ilanNo) continue;
+    const rec = normalize(raw);
+    if (!byKey.has(rec.key)) added += 1;
+    byKey.set(rec.key, { ...(byKey.get(rec.key) || {}), ...rec });
   }
-  const list = [...byId.values()];
+  const list = [...byKey.values()];
   await write(list);
   return { total: list.length, added };
 }
