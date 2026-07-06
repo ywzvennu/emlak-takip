@@ -1,0 +1,28 @@
+name: Release
+
+# Build the loadable .zip and attach it to a GitHub Release when a version tag
+# is pushed, e.g. `git tag v0.2.0 && git push origin v0.2.0`.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build package
+        run: npm run package
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip

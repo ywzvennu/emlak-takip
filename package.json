@@ -8,7 +8,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "node --test"
+    "test": "node --test",
+    "package": "node scripts/package.mjs",
+    "version:set": "node scripts/set-version.mjs"
   },
   "license": "MIT",
   "devDependencies": {

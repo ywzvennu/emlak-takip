@@ -53,6 +53,17 @@ boundaries:
   `_locales/<lang>/messages.json`. Add every new key to **both** `tr` and `en`
   (a test enforces parity).
 
+## Releasing
+
+```bash
+npm run version:set 0.2.0   # bumps manifest.json + package.json together
+npm run package             # writes dist/emlak-takip-0.2.0.zip (runtime files only)
+```
+
+Pushing a `v*` tag (e.g. `git tag v0.2.0 && git push origin v0.2.0`) triggers
+`.github/workflows/release.yml`, which builds the zip and attaches it to a
+GitHub Release.
+
 ## Adding a listing site
 
 Site adapters are being moved behind a provider registry (see the open
