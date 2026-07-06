@@ -50,6 +50,18 @@ Provider files are classic scripts (no `import`/`export`) so they work both as
 content scripts and as side-effect imports in Node tests, where they attach to
 `globalThis` instead of the page's `self`.
 
+Two parse strategies are in use:
+
+- **DOM selectors** (`sahibinden.js`) — for server-rendered pages. Selectors
+  live in a `SELECTORS` object with fallbacks.
+- **JSON-LD** (`hepsiemlak.js`, `emlakjet.js`) — client-rendered SPAs that embed
+  a schema.org `RealEstateListing`/`Product` block. The shared
+  `providers/jsonld.js` helper (`EmlakTakipJsonLd.toRecord`) extracts the
+  normalized record from it; each provider only supplies its host match and how
+  to read the listing id from the URL. Because these sites are SPAs, capture
+  runs on a full page load of the detail URL (client-side navigation does not
+  re-run the content script).
+
 ### Adding a provider
 
 1. Add `src/providers/<site>.js` implementing the interface above.

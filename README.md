@@ -103,6 +103,6 @@ provider interface and the normalized record schema.
 
 ## Roadmap
 
-- More provider adapters (Hepsiemlak, Emlakjet).
+- More provider adapters (currently: Sahibinden, Hepsiemlak, Emlakjet).
 - `chrome.storage.sync` toggle for cross-device sync.
 - Optional periodic price re-check via an alarm.
