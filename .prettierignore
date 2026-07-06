@@ -1,0 +1,5 @@
+node_modules/
+src/icons/
+*.min.js
+package-lock.json
+.claude/

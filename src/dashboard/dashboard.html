@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
   <head>
     <meta charset="utf-8" />
@@ -14,8 +14,17 @@
         <span id="count" class="count"></span>
       </div>
       <div class="actions">
-        <input id="search" class="search" type="search" data-i18n-attr="placeholder:searchPlaceholder" />
-        <button id="exportJson" class="btn ghost" data-i18n="exportJson"></button>
+        <input
+          id="search"
+          class="search"
+          type="search"
+          data-i18n-attr="placeholder:searchPlaceholder"
+        />
+        <button
+          id="exportJson"
+          class="btn ghost"
+          data-i18n="exportJson"
+        ></button>
         <button id="exportCsv" class="btn ghost" data-i18n="exportCsv"></button>
         <label class="btn ghost file">
           <span data-i18n="importBtn"></span>
@@ -30,7 +39,11 @@
       <select id="fStatus" class="sel"></select>
       <select id="fTag" class="sel"></select>
       <select id="sort" class="sel"></select>
-      <button id="clearFilters" class="btn tiny" data-i18n="resetFilters"></button>
+      <button
+        id="clearFilters"
+        class="btn tiny"
+        data-i18n="resetFilters"
+      ></button>
     </section>
 
     <main id="grid" class="grid"></main>
@@ -52,16 +65,32 @@
           <div class="card-specs"></div>
 
           <div class="card-controls">
-            <select class="status-sel" data-i18n-attr="title:statusTip"></select>
-            <input class="tags-input" data-i18n-attr="placeholder:tagsPlaceholder;title:tagsTip" />
+            <select
+              class="status-sel"
+              data-i18n-attr="title:statusTip"
+            ></select>
+            <input
+              class="tags-input"
+              data-i18n-attr="placeholder:tagsPlaceholder;title:tagsTip"
+            />
           </div>
-          <textarea class="notes" rows="2" data-i18n-attr="placeholder:notesPlaceholder"></textarea>
+          <textarea
+            class="notes"
+            rows="2"
+            data-i18n-attr="placeholder:notesPlaceholder"
+          ></textarea>
 
           <div class="card-foot">
             <span class="saved-at"></span>
             <div class="foot-actions">
-              <button class="btn tiny history-btn" data-i18n="priceHistoryBtn"></button>
-              <button class="btn tiny danger del-btn" data-i18n="deleteBtn"></button>
+              <button
+                class="btn tiny history-btn"
+                data-i18n="priceHistoryBtn"
+              ></button>
+              <button
+                class="btn tiny danger del-btn"
+                data-i18n="deleteBtn"
+              ></button>
             </div>
           </div>
           <div class="history hidden"></div>

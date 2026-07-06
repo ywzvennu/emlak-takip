@@ -14,7 +14,8 @@
     return new Promise((resolve) => {
       try {
         chrome.runtime.sendMessage(message, (res) => {
-          if (chrome.runtime.lastError) resolve({ ok: false, error: chrome.runtime.lastError.message });
+          if (chrome.runtime.lastError)
+            resolve({ ok: false, error: chrome.runtime.lastError.message });
           else resolve(res || { ok: false });
         });
       } catch (e) {

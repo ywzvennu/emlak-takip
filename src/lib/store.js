@@ -11,7 +11,12 @@ const KEY = "ilanlar";
 
 // Canonical domain values. Human-readable labels live in src/lib/i18n.js so
 // they can be localized; keep the value order here as the display order.
-export const STATUS_VALUES = ["kaydedildi", "ilgileniliyor", "arandi", "elendi"];
+export const STATUS_VALUES = [
+  "kaydedildi",
+  "ilgileniliyor",
+  "arandi",
+  "elendi",
+];
 export const CATEGORY_VALUES = ["konut", "ticari", "arsa", "diger"];
 export const TYPE_VALUES = ["satilik", "kiralik"];
 
@@ -46,7 +51,9 @@ function hasNewPrice(record, price) {
   if (!price || price.amount == null) return false;
   const hist = record.priceHistory || [];
   const last = hist[hist.length - 1];
-  return !last || last.amount !== price.amount || last.currency !== price.currency;
+  return (
+    !last || last.amount !== price.amount || last.currency !== price.currency
+  );
 }
 
 // Insert a freshly captured listing, or refresh an existing one while keeping
@@ -93,7 +100,10 @@ export async function upsert(payload) {
     lastSeenAt: now,
   };
   if (hasNewPrice(existing, payload.price)) {
-    merged.priceHistory = [...(existing.priceHistory || []), pricePoint(payload.price, now)];
+    merged.priceHistory = [
+      ...(existing.priceHistory || []),
+      pricePoint(payload.price, now),
+    ];
   }
   list[idx] = merged;
   await write(list);
@@ -112,7 +122,10 @@ export async function recordSeen(payload) {
   const now = Date.now();
   let priceChanged = false;
   if (hasNewPrice(existing, payload.price)) {
-    existing.priceHistory = [...(existing.priceHistory || []), pricePoint(payload.price, now)];
+    existing.priceHistory = [
+      ...(existing.priceHistory || []),
+      pricePoint(payload.price, now),
+    ];
     existing.price = payload.price;
     priceChanged = true;
   }

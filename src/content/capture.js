@@ -26,7 +26,11 @@
     ],
     infoList: [".classifiedInfoList li", ".classifiedInfo ul li"],
     locationLinks: [".classifiedInfo h2 a", ".searchResultsBreadCrumb a"],
-    galleryImg: [".classifiedDetailMainPhoto img", "#classifiedDetailPhoto img", "img"],
+    galleryImg: [
+      ".classifiedDetailMainPhoto img",
+      "#classifiedDetailPhoto img",
+      "img",
+    ],
   };
 
   const CURRENCY_RE = /(\d[\d.\s]*\d|\d)\s*(TL|₺|USD|\$|EUR|€)/;
@@ -77,10 +81,10 @@
     const currency = /USD|\$/.test(raw)
       ? "USD"
       : /EUR|€/.test(raw)
-      ? "EUR"
-      : /TL|₺/.test(raw)
-      ? "TL"
-      : null;
+        ? "EUR"
+        : /TL|₺/.test(raw)
+          ? "TL"
+          : null;
     const digits = raw.replace(/[^\d]/g, "");
     const amount = digits ? parseInt(digits, 10) : null;
     return { amount, currency, raw: raw.trim() };

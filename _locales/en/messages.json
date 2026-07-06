@@ -1,12 +1,16 @@
 {
   "appName": { "message": "Emlak Takip" },
-  "appDesc": { "message": "Save, note, tag and track price changes for real-estate listings." },
+  "appDesc": {
+    "message": "Save, note, tag and track price changes for real-estate listings."
+  },
   "actionTitle": { "message": "Emlak Takip" },
 
   "btnSave": { "message": "Save" },
   "btnSaved": { "message": "Saved" },
   "btnSaveTip": { "message": "Save this listing" },
-  "btnSavedTip": { "message": "This listing is saved — click to open your panel" },
+  "btnSavedTip": {
+    "message": "This listing is saved — click to open your panel"
+  },
   "toastReadFail": { "message": "Could not read listing details." },
   "toastSaved": { "message": "Listing saved ✓" },
   "toastUpdated": { "message": "Listing updated ✓" },
@@ -39,7 +43,9 @@
   "filterAllStatuses": { "message": "All statuses" },
   "filterAllTags": { "message": "All tags" },
   "resetFilters": { "message": "Reset" },
-  "emptyState": { "message": "No saved listings yet. Click Save on a real-estate listing page." },
+  "emptyState": {
+    "message": "No saved listings yet. Click Save on a real-estate listing page."
+  },
   "tagsPlaceholder": { "message": "tag, tag…" },
   "tagsTip": { "message": "Tags (comma separated)" },
   "statusTip": { "message": "Status" },

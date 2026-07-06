@@ -1,0 +1,20 @@
+{
+  "name": "emlak-takip",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Brave/Chrome (Manifest V3) extension for saving Turkish real-estate listings.",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0",
+    "prettier": "^3.0.0"
+  }
+}

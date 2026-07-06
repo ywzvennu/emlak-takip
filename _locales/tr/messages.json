@@ -1,6 +1,8 @@
 {
   "appName": { "message": "Emlak Takip" },
-  "appDesc": { "message": "Emlak ilanlarını kaydet, notlandır, etiketle ve fiyat değişimini takip et." },
+  "appDesc": {
+    "message": "Emlak ilanlarını kaydet, notlandır, etiketle ve fiyat değişimini takip et."
+  },
   "actionTitle": { "message": "Emlak Takip" },
 
   "btnSave": { "message": "Kaydet" },
@@ -39,7 +41,9 @@
   "filterAllStatuses": { "message": "Tüm durumlar" },
   "filterAllTags": { "message": "Tüm etiketler" },
   "resetFilters": { "message": "Sıfırla" },
-  "emptyState": { "message": "Henüz kayıtlı ilan yok. Bir emlak ilanı sayfasında Kaydet'e bas." },
+  "emptyState": {
+    "message": "Henüz kayıtlı ilan yok. Bir emlak ilanı sayfasında Kaydet'e bas."
+  },
   "tagsPlaceholder": { "message": "etiket, etiket…" },
   "tagsTip": { "message": "Etiketler (virgülle ayır)" },
   "statusTip": { "message": "Durum" },
@@ -61,7 +65,9 @@
   },
   "importFail": {
     "message": "İçe aktarma başarısız: $error$",
-    "placeholders": { "error": { "content": "$1", "example": "geçersiz dosya" } }
+    "placeholders": {
+      "error": { "content": "$1", "example": "geçersiz dosya" }
+    }
   },
 
   "sortSavedDesc": { "message": "Eklenme (yeni → eski)" },

@@ -24,9 +24,11 @@ const STATUS_MSG = {
   elendi: "statusElendi",
 };
 
-export const categoryLabel = (v) => (v && CATEGORY_MSG[v] ? t(CATEGORY_MSG[v]) : v || "");
+export const categoryLabel = (v) =>
+  v && CATEGORY_MSG[v] ? t(CATEGORY_MSG[v]) : v || "";
 export const typeLabel = (v) => (v && TYPE_MSG[v] ? t(TYPE_MSG[v]) : v || "");
-export const statusLabel = (v) => (v && STATUS_MSG[v] ? t(STATUS_MSG[v]) : v || "");
+export const statusLabel = (v) =>
+  v && STATUS_MSG[v] ? t(STATUS_MSG[v]) : v || "";
 
 // Apply message strings to static markup:
 //   <span data-i18n="popupBrand"></span>            -> textContent

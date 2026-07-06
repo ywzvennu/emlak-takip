@@ -1,6 +1,12 @@
 import * as store from "../lib/store.js";
 import { STATUS_VALUES, CATEGORY_VALUES, TYPE_VALUES } from "../lib/store.js";
-import { t, localizeDom, categoryLabel, typeLabel, statusLabel } from "../lib/i18n.js";
+import {
+  t,
+  localizeDom,
+  categoryLabel,
+  typeLabel,
+  statusLabel,
+} from "../lib/i18n.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -14,20 +20,40 @@ const nf = new Intl.NumberFormat("tr-TR");
 
 function fmtPrice(price) {
   if (!price) return "—";
-  if (price.amount != null) return `${nf.format(price.amount)} ${price.currency || ""}`.trim();
+  if (price.amount != null)
+    return `${nf.format(price.amount)} ${price.currency || ""}`.trim();
   return price.raw || "—";
 }
 
 function fmtDate(ts) {
   if (!ts) return "";
   const d = new Date(ts);
-  return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short", year: "numeric" });
+  return d.toLocaleDateString("tr-TR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function specLine(attrs) {
   if (!attrs) return "";
-  const keys = ["m² (Brüt)", "m² (Net)", "m²", "Oda Sayısı", "Bina Yaşı", "Isıtma", "İmar Durumu", "Kaks (Emsal)"];
-  return keys.filter((k) => attrs[k]).map((k) => `${k.replace(" (Brüt)", " br.").replace(" (Net)", " net").replace(" Sayısı", "")}: ${attrs[k]}`).join(" · ");
+  const keys = [
+    "m² (Brüt)",
+    "m² (Net)",
+    "m²",
+    "Oda Sayısı",
+    "Bina Yaşı",
+    "Isıtma",
+    "İmar Durumu",
+    "Kaks (Emsal)",
+  ];
+  return keys
+    .filter((k) => attrs[k])
+    .map(
+      (k) =>
+        `${k.replace(" (Brüt)", " br.").replace(" (Net)", " net").replace(" Sayısı", "")}: ${attrs[k]}`
+    )
+    .join(" · ");
 }
 
 function priceDelta(record) {
@@ -46,16 +72,43 @@ function priceDelta(record) {
 function fillSelect(el, options, current, allLabel) {
   el.innerHTML =
     `<option value="">${allLabel}</option>` +
-    options.map((o) => `<option value="${o.value}"${o.value === current ? " selected" : ""}>${o.label}</option>`).join("");
+    options
+      .map(
+        (o) =>
+          `<option value="${o.value}"${o.value === current ? " selected" : ""}>${o.label}</option>`
+      )
+      .join("");
 }
 
 function rebuildFilters() {
-  fillSelect($("#fCategory"), CATEGORY_VALUES.map((v) => ({ value: v, label: categoryLabel(v) })), state.filters.category, t("filterAllCategories"));
-  fillSelect($("#fType"), TYPE_VALUES.map((v) => ({ value: v, label: typeLabel(v) })), state.filters.type, t("filterAllTypes"));
-  fillSelect($("#fStatus"), STATUS_VALUES.map((v) => ({ value: v, label: statusLabel(v) })), state.filters.status, t("filterAllStatuses"));
+  fillSelect(
+    $("#fCategory"),
+    CATEGORY_VALUES.map((v) => ({ value: v, label: categoryLabel(v) })),
+    state.filters.category,
+    t("filterAllCategories")
+  );
+  fillSelect(
+    $("#fType"),
+    TYPE_VALUES.map((v) => ({ value: v, label: typeLabel(v) })),
+    state.filters.type,
+    t("filterAllTypes")
+  );
+  fillSelect(
+    $("#fStatus"),
+    STATUS_VALUES.map((v) => ({ value: v, label: statusLabel(v) })),
+    state.filters.status,
+    t("filterAllStatuses")
+  );
 
-  const tags = [...new Set(state.all.flatMap((r) => r.tags || []))].sort((a, b) => a.localeCompare(b, "tr"));
-  fillSelect($("#fTag"), tags.map((tag) => ({ value: tag, label: tag })), state.filters.tag, t("filterAllTags"));
+  const tags = [...new Set(state.all.flatMap((r) => r.tags || []))].sort(
+    (a, b) => a.localeCompare(b, "tr")
+  );
+  fillSelect(
+    $("#fTag"),
+    tags.map((tag) => ({ value: tag, label: tag })),
+    state.filters.tag,
+    t("filterAllTags")
+  );
 
   const sorts = [
     { value: "savedAt-desc", label: t("sortSavedDesc") },
@@ -79,7 +132,15 @@ function applyFilters(list) {
     if (status && r.status !== status) return false;
     if (tag && !(r.tags || []).includes(tag)) return false;
     if (needle) {
-      const hay = [r.title, r.location && r.location.raw, r.notes, (r.tags || []).join(" ")].filter(Boolean).join(" ").toLowerCase();
+      const hay = [
+        r.title,
+        r.location && r.location.raw,
+        r.notes,
+        (r.tags || []).join(" "),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       if (!hay.includes(needle)) return false;
     }
     return true;
@@ -131,7 +192,10 @@ function buildCard(tpl, r) {
   const badges = [];
   if (r.category) badges.push(categoryLabel(r.category));
   if (r.listingType) badges.push(typeLabel(r.listingType));
-  node.querySelector(".card-badges").innerHTML = badges.filter(Boolean).map((b) => `<span class="badge">${b}</span>`).join("");
+  node.querySelector(".card-badges").innerHTML = badges
+    .filter(Boolean)
+    .map((b) => `<span class="badge">${b}</span>`)
+    .join("");
 
   const titleA = node.querySelector(".card-title");
   titleA.textContent = r.title || "İlan";
@@ -145,16 +209,24 @@ function buildCard(tpl, r) {
     deltaEl.classList.add(delta.down ? "down" : "up");
   }
 
-  node.querySelector(".card-loc").textContent = r.location ? r.location.raw || "" : "";
+  node.querySelector(".card-loc").textContent = r.location
+    ? r.location.raw || ""
+    : "";
   node.querySelector(".card-specs").textContent = specLine(r.attributes);
 
   const statusSel = node.querySelector(".status-sel");
-  statusSel.innerHTML = STATUS_VALUES.map((v) => `<option value="${v}"${v === r.status ? " selected" : ""}>${statusLabel(v)}</option>`).join("");
+  statusSel.innerHTML = STATUS_VALUES.map(
+    (v) =>
+      `<option value="${v}"${v === r.status ? " selected" : ""}>${statusLabel(v)}</option>`
+  ).join("");
   statusSel.dataset.status = r.status;
 
   node.querySelector(".tags-input").value = (r.tags || []).join(", ");
   node.querySelector(".notes").value = r.notes || "";
-  node.querySelector(".saved-at").textContent = t("addedOn", fmtDate(r.savedAt));
+  node.querySelector(".saved-at").textContent = t(
+    "addedOn",
+    fmtDate(r.savedAt)
+  );
 
   localizeDom(node); // template placeholders/titles (data-i18n-attr)
   return node;
@@ -170,7 +242,12 @@ function renderHistory(container, record) {
     .map((p, i) => {
       const prev = h[i - 1];
       let tag = "";
-      if (prev && prev.amount != null && p.amount != null && prev.amount !== p.amount) {
+      if (
+        prev &&
+        prev.amount != null &&
+        p.amount != null &&
+        prev.amount !== p.amount
+      ) {
         const down = p.amount < prev.amount;
         tag = ` <span class="hist-delta ${down ? "down" : "up"}">${down ? "▼" : "▲"}</span>`;
       }
@@ -196,12 +273,33 @@ function debounce(fn, ms) {
 }
 
 function wireFilters() {
-  $("#fCategory").addEventListener("change", (e) => { state.filters.category = e.target.value; render(); });
-  $("#fType").addEventListener("change", (e) => { state.filters.type = e.target.value; render(); });
-  $("#fStatus").addEventListener("change", (e) => { state.filters.status = e.target.value; render(); });
-  $("#fTag").addEventListener("change", (e) => { state.filters.tag = e.target.value; render(); });
-  $("#sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
-  $("#search").addEventListener("input", debounce((e) => { state.filters.q = e.target.value; render(); }, 180));
+  $("#fCategory").addEventListener("change", (e) => {
+    state.filters.category = e.target.value;
+    render();
+  });
+  $("#fType").addEventListener("change", (e) => {
+    state.filters.type = e.target.value;
+    render();
+  });
+  $("#fStatus").addEventListener("change", (e) => {
+    state.filters.status = e.target.value;
+    render();
+  });
+  $("#fTag").addEventListener("change", (e) => {
+    state.filters.tag = e.target.value;
+    render();
+  });
+  $("#sort").addEventListener("change", (e) => {
+    state.sort = e.target.value;
+    render();
+  });
+  $("#search").addEventListener(
+    "input",
+    debounce((e) => {
+      state.filters.q = e.target.value;
+      render();
+    }, 180)
+  );
   $("#clearFilters").addEventListener("click", () => {
     state.filters = { category: "", type: "", status: "", tag: "", q: "" };
     state.sort = "savedAt-desc";
@@ -226,22 +324,29 @@ function wireGrid() {
   });
 
   // save tags/notes on blur
-  grid.addEventListener("blur", async (e) => {
-    const card = e.target.closest(".card");
-    if (!card) return;
-    const ilanNo = card.dataset.ilan;
-    if (e.target.classList.contains("tags-input")) {
-      const tags = e.target.value.split(",").map((t) => t.trim()).filter(Boolean);
-      await store.updateRecord(ilanNo, { tags });
-      const rec = state.all.find((x) => x.ilanNo === ilanNo);
-      if (rec) rec.tags = tags;
-      rebuildFilters();
-    } else if (e.target.classList.contains("notes")) {
-      await store.updateRecord(ilanNo, { notes: e.target.value });
-      const rec = state.all.find((x) => x.ilanNo === ilanNo);
-      if (rec) rec.notes = e.target.value;
-    }
-  }, true);
+  grid.addEventListener(
+    "blur",
+    async (e) => {
+      const card = e.target.closest(".card");
+      if (!card) return;
+      const ilanNo = card.dataset.ilan;
+      if (e.target.classList.contains("tags-input")) {
+        const tags = e.target.value
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean);
+        await store.updateRecord(ilanNo, { tags });
+        const rec = state.all.find((x) => x.ilanNo === ilanNo);
+        if (rec) rec.tags = tags;
+        rebuildFilters();
+      } else if (e.target.classList.contains("notes")) {
+        await store.updateRecord(ilanNo, { notes: e.target.value });
+        const rec = state.all.find((x) => x.ilanNo === ilanNo);
+        if (rec) rec.notes = e.target.value;
+      }
+    },
+    true
+  );
 
   grid.addEventListener("click", async (e) => {
     const card = e.target.closest(".card");
@@ -255,7 +360,10 @@ function wireGrid() {
       const box = card.querySelector(".history");
       box.classList.toggle("hidden");
       if (!box.classList.contains("hidden")) {
-        renderHistory(box, state.all.find((x) => x.ilanNo === ilanNo));
+        renderHistory(
+          box,
+          state.all.find((x) => x.ilanNo === ilanNo)
+        );
       }
     }
   });
@@ -280,8 +388,25 @@ function stamp() {
 }
 
 function toCsv(list) {
-  const attrKeys = [...new Set(list.flatMap((r) => Object.keys(r.attributes || {})))];
-  const base = ["ilanNo", "title", "category", "listingType", "priceAmount", "currency", "il", "ilce", "mahalle", "status", "tags", "notes", "savedAt", "url"];
+  const attrKeys = [
+    ...new Set(list.flatMap((r) => Object.keys(r.attributes || {}))),
+  ];
+  const base = [
+    "ilanNo",
+    "title",
+    "category",
+    "listingType",
+    "priceAmount",
+    "currency",
+    "il",
+    "ilce",
+    "mahalle",
+    "status",
+    "tags",
+    "notes",
+    "savedAt",
+    "url",
+  ];
   const header = [...base, ...attrKeys];
   const esc = (v) => {
     const s = v == null ? "" : String(v);
@@ -312,10 +437,18 @@ function toCsv(list) {
 
 function wireIo() {
   $("#exportJson").addEventListener("click", () => {
-    download(`emlak-takip-ilanlarim-${stamp()}.json`, JSON.stringify(state.all, null, 2), "application/json");
+    download(
+      `emlak-takip-ilanlarim-${stamp()}.json`,
+      JSON.stringify(state.all, null, 2),
+      "application/json"
+    );
   });
   $("#exportCsv").addEventListener("click", () => {
-    download(`emlak-takip-ilanlarim-${stamp()}.csv`, "﻿" + toCsv(state.all), "text/csv");
+    download(
+      `emlak-takip-ilanlarim-${stamp()}.csv`,
+      "﻿" + toCsv(state.all),
+      "text/csv"
+    );
   });
   $("#importFile").addEventListener("change", async (e) => {
     const file = e.target.files[0];
@@ -323,7 +456,9 @@ function wireIo() {
     try {
       const data = JSON.parse(await file.text());
       const list = Array.isArray(data) ? data : data.ilanlar || [];
-      const { total, added } = await store.importListings(list, { replace: false });
+      const { total, added } = await store.importListings(list, {
+        replace: false,
+      });
       alert(t("importResult", [String(added), String(total)]));
       await reload();
     } catch (err) {
