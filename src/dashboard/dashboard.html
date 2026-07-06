@@ -53,6 +53,7 @@
       <article class="card">
         <a class="card-thumb" target="_blank" rel="noopener">
           <img alt="" />
+          <span class="photo-count hidden"></span>
         </a>
         <div class="card-body">
           <div class="card-badges"></div>
@@ -61,8 +62,17 @@
             <span class="price-now"></span>
             <span class="price-delta"></span>
           </div>
-          <div class="card-loc"></div>
+          <div class="card-loc">
+            <span class="loc-text"></span>
+            <a
+              class="map-link hidden"
+              target="_blank"
+              rel="noopener"
+              data-i18n="mapLink"
+            ></a>
+          </div>
           <div class="card-specs"></div>
+          <div class="card-contact hidden"></div>
 
           <div class="card-controls">
             <select
@@ -84,6 +94,10 @@
             <span class="saved-at"></span>
             <div class="foot-actions">
               <button
+                class="btn tiny desc-btn hidden"
+                data-i18n="descBtn"
+              ></button>
+              <button
                 class="btn tiny history-btn"
                 data-i18n="priceHistoryBtn"
               ></button>
@@ -94,6 +108,7 @@
             </div>
           </div>
           <div class="history hidden"></div>
+          <div class="desc hidden"></div>
         </div>
       </article>
     </template>

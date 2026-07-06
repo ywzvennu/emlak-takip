@@ -56,6 +56,45 @@ function specLine(attrs) {
     .join(" · ");
 }
 
+function escapeHtml(s) {
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c]
+  );
+}
+
+function mapUrl(geo) {
+  const { lat, lng } = geo;
+  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;
+}
+
+// national 10-digit -> "0532 111 22 33"
+function fmtPhone(p) {
+  const d = String(p || "");
+  if (d.length !== 10) return d;
+  return `0${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`;
+}
+
+function contactLine(c) {
+  if (!c) return "";
+  const parts = [];
+  const label =
+    c.agency || c.name || (c.type === "sahibinden" ? t("sellerOwner") : "");
+  if (label) parts.push(`<span class="c-name">${escapeHtml(label)}</span>`);
+  if (c.phone)
+    parts.push(
+      `<a class="c-phone" href="tel:+90${c.phone}">${fmtPhone(c.phone)}</a>`
+    );
+  return parts.join(" · ");
+}
+
 function priceDelta(record) {
   const h = record.priceHistory || [];
   if (h.length < 2) return null;
@@ -209,10 +248,30 @@ function buildCard(tpl, r) {
     deltaEl.classList.add(delta.down ? "down" : "up");
   }
 
-  node.querySelector(".card-loc").textContent = r.location
+  node.querySelector(".loc-text").textContent = r.location
     ? r.location.raw || ""
     : "";
+  const mapLink = node.querySelector(".map-link");
+  if (r.geo && r.geo.lat != null && r.geo.lng != null) {
+    mapLink.href = mapUrl(r.geo);
+    mapLink.classList.remove("hidden");
+  }
   node.querySelector(".card-specs").textContent = specLine(r.attributes);
+
+  const contactHtml = contactLine(r.contact);
+  if (contactHtml) {
+    const contactEl = node.querySelector(".card-contact");
+    contactEl.innerHTML = contactHtml;
+    contactEl.classList.remove("hidden");
+  }
+
+  const photoCount = node.querySelector(".photo-count");
+  if (r.photos && r.photos.length) {
+    photoCount.textContent = `📷 ${r.photos.length}`;
+    photoCount.classList.remove("hidden");
+  }
+
+  if (r.description) node.querySelector(".desc-btn").classList.remove("hidden");
 
   const statusSel = node.querySelector(".status-sel");
   statusSel.innerHTML = STATUS_VALUES.map(
@@ -365,6 +424,13 @@ function wireGrid() {
           state.all.find((x) => x.key === key)
         );
       }
+    } else if (e.target.classList.contains("desc-btn")) {
+      const box = card.querySelector(".desc");
+      box.classList.toggle("hidden");
+      if (!box.classList.contains("hidden")) {
+        const rec = state.all.find((x) => x.key === key);
+        box.textContent = (rec && rec.description) || t("noDescription");
+      }
     }
   });
 }
@@ -404,6 +470,11 @@ function toCsv(list) {
     "status",
     "tags",
     "notes",
+    "agency",
+    "phone",
+    "lat",
+    "lng",
+    "description",
     "savedAt",
     "url",
   ];
@@ -426,6 +497,11 @@ function toCsv(list) {
       r.status,
       (r.tags || []).join("|"),
       r.notes,
+      r.contact ? r.contact.agency || r.contact.name || "" : "",
+      r.contact ? (r.contact.phones || []).join("|") : "",
+      r.geo ? r.geo.lat : "",
+      r.geo ? r.geo.lng : "",
+      r.description || "",
       r.savedAt ? new Date(r.savedAt).toISOString() : "",
       r.url,
       ...attrKeys.map((k) => (r.attributes ? r.attributes[k] || "" : "")),

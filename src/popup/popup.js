@@ -26,6 +26,12 @@ function fmtPrice(price) {
   return price.raw || "";
 }
 
+function fmtPhone(p) {
+  const d = String(p || "");
+  if (d.length !== 10) return d;
+  return `0${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`;
+}
+
 function specLine(attrs) {
   if (!attrs) return "";
   const keys = [
@@ -66,6 +72,25 @@ function render(payload, saved) {
   $("price").textContent = fmtPrice(payload.price);
   $("loc").textContent = payload.location ? payload.location.raw || "" : "";
   $("specs").textContent = specLine(payload.attributes);
+
+  const c = payload.contact;
+  if (c) {
+    const label =
+      c.agency || c.name || (c.type === "sahibinden" ? t("sellerOwner") : "");
+    const phone = c.phone ? fmtPhone(c.phone) : "";
+    $("contact").textContent = [label, phone].filter(Boolean).join(" · ");
+  } else {
+    $("contact").textContent = "";
+  }
+
+  const map = $("maplink");
+  if (payload.geo && payload.geo.lat != null && payload.geo.lng != null) {
+    const { lat, lng } = payload.geo;
+    map.href = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;
+    map.classList.remove("hidden");
+  } else {
+    map.classList.add("hidden");
+  }
 
   updateSaveBtn(saved);
 }

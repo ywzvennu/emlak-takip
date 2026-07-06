@@ -55,6 +55,46 @@ test("sahibinden.parse extracts the normalized fields", () => {
   assert.equal(rec.thumbnail, "https://cdn.sahibinden.com/photo1.jpg");
 });
 
+test("sahibinden.parse extracts contact, geo, description and photos", () => {
+  const doc = new JSDOM(fixtureHtml("sahibinden-ilan.html"), {
+    url: URL_DETAIL,
+  }).window.document;
+  const rec = registry.getProvider(URL_DETAIL).parse(doc, URL_DETAIL);
+
+  // contact
+  assert.equal(rec.contact.agency, "Örnek Emlak Ofisi");
+  assert.equal(rec.contact.type, "emlak_ofisi");
+  assert.deepEqual(rec.contact.phones, ["5321112233"]);
+  assert.equal(rec.contact.phone, "5321112233");
+  assert.equal(
+    rec.contact.profileUrl,
+    "https://www.sahibinden.com/magaza/ornek-emlak"
+  );
+
+  // geo
+  assert.equal(rec.geo.source, "map-attr");
+  assert.ok(Math.abs(rec.geo.lat - 10.0) < 1e-6);
+  assert.ok(Math.abs(rec.geo.lng - 20.0) < 1e-6);
+
+  // description + photos
+  assert.match(rec.description, /Deniz manzaralı/);
+  assert.deepEqual(rec.photos, [
+    "https://cdn.sahibinden.com/p1.jpg",
+    "https://cdn.sahibinden.com/p2.jpg",
+  ]);
+});
+
+test("parseGeo falls back to a lat/lng pair in an inline script", () => {
+  const html = `<!doctype html><html><body>
+    <script>var cfg = { "latitude": 10.0, "longitude": 20.0 };</script>
+  </body></html>`;
+  const doc = new JSDOM(html, { url: URL_DETAIL }).window.document;
+  const rec = registry.getProvider(URL_DETAIL).parse(doc, URL_DETAIL);
+  assert.equal(rec.geo.source, "script");
+  assert.ok(Math.abs(rec.geo.lat - 10.0) < 1e-6);
+  assert.ok(Math.abs(rec.geo.lng - 20.0) < 1e-6);
+});
+
 // End-to-end through the generic dispatcher, which stamps provider + key.
 test("capture dispatcher stamps provider and composite key", async () => {
   const dom = new JSDOM(fixtureHtml("sahibinden-ilan.html"), {

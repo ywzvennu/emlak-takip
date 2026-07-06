@@ -85,5 +85,14 @@
   "statusKaydedildi": { "message": "Kaydedildi" },
   "statusIlgileniliyor": { "message": "İlgileniliyor" },
   "statusArandi": { "message": "Arandı" },
-  "statusElendi": { "message": "Elendi" }
+  "statusElendi": { "message": "Elendi" },
+
+  "mapLink": { "message": "Harita" },
+  "descBtn": { "message": "Açıklama" },
+  "noDescription": { "message": "Açıklama yok." },
+  "sellerOwner": { "message": "Sahibinden" },
+  "photoCount": {
+    "message": "$count$ fotoğraf",
+    "placeholders": { "count": { "content": "$1", "example": "12" } }
+  }
 }

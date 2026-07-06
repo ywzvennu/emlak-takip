@@ -68,31 +68,37 @@ need to change to support a new site.
 `parse()` returns the **captured** fields; `store.upsert()` adds the
 **user/bookkeeping** fields. Identity is the composite `key`.
 
-| Field          | Source   | Notes                                                |
-| -------------- | -------- | ---------------------------------------------------- |
-| `provider`     | dispatch | provider id, e.g. `"sahibinden"`                     |
-| `ilanNo`       | parse    | site listing id (string)                             |
-| `key`          | dispatch | `` `${provider}:${ilanNo}` `` — the unique key       |
-| `url`          | parse    | canonical listing URL                                |
-| `title`        | parse    |                                                      |
-| `category`     | parse    | `konut` / `ticari` / `arsa` / `diger`                |
-| `listingType`  | parse    | `satilik` / `kiralik`                                |
-| `price`        | parse    | `{ amount, currency, raw }`                          |
-| `location`     | parse    | `{ il, ilce, mahalle, raw }`                         |
-| `attributes`   | parse    | full key→value map of the listing's spec rows        |
-| `thumbnail`    | parse    | preview image URL                                    |
-| `ilanTarihi`   | parse    | listing date (site-formatted string)                 |
-| `capturedAt`   | parse    | epoch ms when parsed                                 |
-| `notes`        | store    | user free text                                       |
-| `tags`         | store    | user tags (string[])                                 |
-| `status`       | store    | `kaydedildi` / `ilgileniliyor` / `arandi` / `elendi` |
-| `savedAt`      | store    | first saved (epoch ms)                               |
-| `updatedAt`    | store    | last write (epoch ms)                                |
-| `lastSeenAt`   | store    | last passive view (epoch ms)                         |
-| `priceHistory` | store    | `[{ amount, currency, raw, at }]`, grows on change   |
+| Field          | Source   | Notes                                                           |
+| -------------- | -------- | --------------------------------------------------------------- |
+| `provider`     | dispatch | provider id, e.g. `"sahibinden"`                                |
+| `ilanNo`       | parse    | site listing id (string)                                        |
+| `key`          | dispatch | `` `${provider}:${ilanNo}` `` — the unique key                  |
+| `url`          | parse    | canonical listing URL                                           |
+| `title`        | parse    |                                                                 |
+| `category`     | parse    | `konut` / `ticari` / `arsa` / `diger`                           |
+| `listingType`  | parse    | `satilik` / `kiralik`                                           |
+| `price`        | parse    | `{ amount, currency, raw }`                                     |
+| `location`     | parse    | `{ il, ilce, mahalle, raw }`                                    |
+| `geo`          | parse    | `{ lat, lng, source }` or `null`                                |
+| `attributes`   | parse    | full key→value map of the listing's spec rows                   |
+| `contact`      | parse    | `{ name, agency, phone, phones[], type, profileUrl }` or `null` |
+| `description`  | parse    | full listing free text or `null`                                |
+| `photos`       | parse    | gallery image URLs (string[])                                   |
+| `thumbnail`    | parse    | preview image URL                                               |
+| `ilanTarihi`   | parse    | listing date (site-formatted string)                            |
+| `capturedAt`   | parse    | epoch ms when parsed                                            |
+| `notes`        | store    | user free text                                                  |
+| `tags`         | store    | user tags (string[])                                            |
+| `status`       | store    | `kaydedildi` / `ilgileniliyor` / `arandi` / `elendi`            |
+| `savedAt`      | store    | first saved (epoch ms)                                          |
+| `updatedAt`    | store    | last write (epoch ms)                                           |
+| `lastSeenAt`   | store    | last passive view (epoch ms)                                    |
+| `priceHistory` | store    | `[{ amount, currency, raw, at }]`, grows on change              |
 
-Planned additions (tracked as issues): `contact`, `geo`, `description`,
-`photos`.
+`contact`, `geo`, `photos` and `description` are best-effort: a provider fills
+them when the page exposes them, otherwise they are `null`/empty. Their
+selectors are the most likely to drift and should be re-checked against a live
+page periodically.
 
 ## Identity & migration
 

@@ -85,5 +85,14 @@
   "statusKaydedildi": { "message": "Saved" },
   "statusIlgileniliyor": { "message": "Interested" },
   "statusArandi": { "message": "Contacted" },
-  "statusElendi": { "message": "Rejected" }
+  "statusElendi": { "message": "Rejected" },
+
+  "mapLink": { "message": "Map" },
+  "descBtn": { "message": "Description" },
+  "noDescription": { "message": "No description." },
+  "sellerOwner": { "message": "From owner" },
+  "photoCount": {
+    "message": "$count$ photos",
+    "placeholders": { "count": { "content": "$1", "example": "12" } }
+  }
 }

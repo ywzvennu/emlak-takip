@@ -31,10 +31,58 @@
       "#classifiedDetailPhoto img",
       "img",
     ],
+    // Seller / agent box. NOTE: these selectors are best-effort and should be
+    // confirmed against a live page — sahibinden changes this area often.
+    contactBox: [
+      ".classifiedUserBox",
+      ".storeInformation",
+      ".username-info-area",
+      ".user-info-module",
+      "#classifiedContactInfo",
+    ],
+    contactName: [
+      ".user-info-agency-name a",
+      ".store-user-name",
+      ".username-info-area h5",
+      ".storeCardMainInfo h3",
+      ".user-info-store-name",
+    ],
+    contactAgency: [
+      ".user-info-agency-name a",
+      ".storeCardMainInfo h3",
+      ".store-name",
+    ],
+    contactStoreLink: [
+      ".user-info-agency-name a",
+      "a.storeName",
+      'a[href*="/magaza/"]',
+      'a[href*="/mağaza/"]',
+    ],
+    mapEl: [
+      "[data-lat][data-lon]",
+      "[data-lat][data-lng]",
+      "#gmap",
+      ".classifiedGmap",
+      "#gmapContainer",
+    ],
+    description: [
+      "#classifiedDescription",
+      ".classifiedDescription",
+      "#descriptionText",
+      '[id*="escription"]',
+    ],
+    photoImgs: [
+      ".megaPhotoThumbList img",
+      ".classified-detail-gallery img",
+      ".classifiedDetailMainPhoto img",
+    ],
   };
 
   const CURRENCY_RE = /(\d[\d.\s]*\d|\d)\s*(TL|₺|USD|\$|EUR|€)/;
   const DETAIL_RE = /\/ilan\/[a-z0-9-]+-\d+\/detay/i;
+  // TR mobile/landline, tolerant of +90 / 0 / parens / spaces / dashes.
+  const PHONE_RE =
+    /(?:\+?90[\s-]?)?(?:0[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}/g;
 
   function first(doc, selList, node) {
     const scope = node || doc;
@@ -147,6 +195,99 @@
     return img ? img.src : null;
   }
 
+  // Pull TR phone numbers out of a text blob, normalized to 10 national digits.
+  function extractPhones(str) {
+    if (!str) return [];
+    const out = new Set();
+    for (const m of str.match(PHONE_RE) || []) {
+      let n = m.replace(/\D/g, "");
+      if (n.startsWith("90") && n.length === 12) n = n.slice(2);
+      if (n.length === 11 && n.startsWith("0")) n = n.slice(1);
+      if (n.length === 10) out.add(n);
+    }
+    return [...out];
+  }
+
+  function parseContact(doc) {
+    const box = first(doc, SELECTORS.contactBox);
+    const name = text(first(doc, SELECTORS.contactName, box || undefined));
+    const agency = text(first(doc, SELECTORS.contactAgency, box || undefined));
+    const storeLink = first(doc, SELECTORS.contactStoreLink, box || undefined);
+    const profileUrl = storeLink && storeLink.href ? storeLink.href : null;
+    const phones = extractPhones(box ? box.textContent : "");
+    const isStore = !!(storeLink || agency);
+
+    if (!name && !agency && !phones.length && !profileUrl) return null;
+    return {
+      name: name || null,
+      agency: agency || (isStore ? name : null),
+      phones,
+      phone: phones[0] || null,
+      type: isStore ? "emlak_ofisi" : "sahibinden",
+      profileUrl,
+    };
+  }
+
+  function validCoord(lat, lng) {
+    return (
+      Number.isFinite(lat) &&
+      Number.isFinite(lng) &&
+      Math.abs(lat) <= 90 &&
+      Math.abs(lng) <= 180 &&
+      !(lat === 0 && lng === 0)
+    );
+  }
+
+  function parseGeo(doc) {
+    const el = first(doc, SELECTORS.mapEl);
+    if (el) {
+      const lat = parseFloat(el.getAttribute("data-lat"));
+      const lng = parseFloat(
+        el.getAttribute("data-lon") ?? el.getAttribute("data-lng")
+      );
+      if (validCoord(lat, lng)) return { lat, lng, source: "map-attr" };
+    }
+    // Fall back to a lat/lng pair embedded in an inline script.
+    for (const s of doc.querySelectorAll("script")) {
+      const txt = s.textContent;
+      if (!txt || !/lat/i.test(txt)) continue;
+      const m = txt.match(
+        /(?:lat|latitude)["'\s:=]+(-?\d{1,2}\.\d{3,})[\s\S]{0,40}?(?:lon|lng|longitude)["'\s:=]+(-?\d{1,3}\.\d{3,})/i
+      );
+      if (m) {
+        const lat = parseFloat(m[1]);
+        const lng = parseFloat(m[2]);
+        if (validCoord(lat, lng)) return { lat, lng, source: "script" };
+      }
+    }
+    return null;
+  }
+
+  function parseDescription(doc) {
+    const el = first(doc, SELECTORS.description);
+    if (!el) return null;
+    const t = el.textContent
+      .replace(/[ \t\u00a0]+/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+    return t || null;
+  }
+
+  function parsePhotos(doc) {
+    const urls = new Set();
+    for (const sel of SELECTORS.photoImgs) {
+      doc.querySelectorAll(sel).forEach((img) => {
+        const src =
+          img.getAttribute("data-src") ||
+          img.getAttribute("data-lazy") ||
+          img.src;
+        if (src && /^https?:/.test(src)) urls.add(src);
+      });
+      if (urls.size) break;
+    }
+    return [...urls];
+  }
+
   function parse(doc, url) {
     const clean = (url || "").split("#")[0];
     const slug = parseSlug(clean);
@@ -172,7 +313,11 @@
       listingType: slug.listingType,
       price,
       location: parseLocation(doc),
+      geo: parseGeo(doc),
       attributes,
+      contact: parseContact(doc),
+      description: parseDescription(doc),
+      photos: parsePhotos(doc),
       thumbnail: metaOf(doc, ["og:image"]) || firstImage(doc),
       ilanTarihi: attributes["İlan Tarihi"] || null,
       capturedAt: Date.now(),

@@ -162,6 +162,22 @@ body {
   cursor: default;
 }
 
+.contact {
+  font-size: 12px;
+  color: var(--ink);
+}
+.maplink {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+}
+.maplink::before {
+  content: "📍 ";
+}
+
 .hidden {
   display: none !important;
 }

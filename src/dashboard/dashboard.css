@@ -280,3 +280,54 @@ body {
 .hidden {
   display: none !important;
 }
+
+/* --- rich capture: photos, map, contact, description --- */
+.card-thumb {
+  position: relative;
+}
+.photo-count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+}
+.card-loc {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.map-link {
+  color: var(--green);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.map-link::before {
+  content: "📍 ";
+}
+.card-contact {
+  font-size: 12px;
+  color: var(--ink);
+}
+.card-contact .c-name {
+  font-weight: 600;
+}
+.card-contact .c-phone {
+  color: var(--green);
+  text-decoration: none;
+}
+.desc {
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: #fafafa;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
