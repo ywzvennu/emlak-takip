@@ -7,7 +7,7 @@ import globals from "globals";
 //   - Python and generated assets are ignored
 export default [
   {
-    ignores: ["node_modules/", "scripts/**", "**/*.zip"],
+    ignores: ["node_modules/", "scripts/**", "src/vendor/**", "**/*.zip"],
   },
   js.configs.recommended,
   {

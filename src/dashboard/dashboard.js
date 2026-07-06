@@ -7,6 +7,9 @@ import {
   typeLabel,
   statusLabel,
 } from "../lib/i18n.js";
+import { point, boundsOf, osmUrl } from "../lib/geo.js";
+
+/* global L */ // Leaflet, loaded as a classic script before this module
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -14,6 +17,7 @@ const state = {
   all: [],
   filters: { category: "", type: "", status: "", tag: "", q: "" },
   sort: "savedAt-desc",
+  view: "list",
 };
 
 const nf = new Intl.NumberFormat("tr-TR");
@@ -68,11 +72,6 @@ function escapeHtml(s) {
         "'": "&#39;",
       })[c]
   );
-}
-
-function mapUrl(geo) {
-  const { lat, lng } = geo;
-  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;
 }
 
 // national 10-digit -> "0532 111 22 33"
@@ -202,6 +201,74 @@ function sortList(list) {
   });
 }
 
+// ---------- map view ----------
+
+let map = null;
+let markerLayer = null;
+
+function pinIcon() {
+  return L.divIcon({
+    className: "emt-pin",
+    html: '<span class="emt-pin-dot"></span>',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+    popupAnchor: [0, -8],
+  });
+}
+
+function ensureMap() {
+  if (map) return;
+  map = L.map("map", { scrollWheelZoom: true }).setView([39, 35], 5);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap",
+  }).addTo(map);
+  markerLayer = L.layerGroup().addTo(map);
+}
+
+function mapPopupHtml(r) {
+  const cat = [categoryLabel(r.category), typeLabel(r.listingType)]
+    .filter(Boolean)
+    .join(" · ");
+  const loc = (r.location && r.location.raw) || "";
+  return (
+    `<div class="map-pop">` +
+    `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">` +
+    `<strong>${escapeHtml(r.title || "İlan")}</strong></a>` +
+    `<div class="mp-price">${escapeHtml(fmtPrice(r.price))}</div>` +
+    (cat ? `<div class="mp-cat">${escapeHtml(cat)}</div>` : "") +
+    (loc ? `<div class="mp-loc">${escapeHtml(loc)}</div>` : "") +
+    `</div>`
+  );
+}
+
+function renderMap(rows) {
+  ensureMap();
+  markerLayer.clearLayers();
+  const located = rows.filter((r) => point(r));
+  for (const r of located) {
+    L.marker(point(r), { icon: pinIcon() })
+      .bindPopup(mapPopupHtml(r))
+      .addTo(markerLayer);
+  }
+  const b = boundsOf(located);
+  if (b) map.fitBounds(b, { padding: [30, 30], maxZoom: 15 });
+  $("#mapNote").classList.toggle("hidden", located.length !== 0);
+  // the container was hidden when the map was created -> recompute its size
+  setTimeout(() => map.invalidateSize(), 0);
+}
+
+function setView(view) {
+  state.view = view;
+  const isMap = view === "map";
+  $("#grid").classList.toggle("hidden", isMap);
+  $("#map").classList.toggle("hidden", !isMap);
+  $("#viewList").classList.toggle("active", !isMap);
+  $("#viewMap").classList.toggle("active", isMap);
+  if (!isMap) $("#mapNote").classList.add("hidden");
+  render();
+}
+
 // ---------- rendering ----------
 
 function render() {
@@ -216,6 +283,8 @@ function render() {
   for (const r of rows) {
     grid.appendChild(buildCard(tpl, r));
   }
+
+  if (state.view === "map") renderMap(rows);
 }
 
 function buildCard(tpl, r) {
@@ -252,8 +321,9 @@ function buildCard(tpl, r) {
     ? r.location.raw || ""
     : "";
   const mapLink = node.querySelector(".map-link");
-  if (r.geo && r.geo.lat != null && r.geo.lng != null) {
-    mapLink.href = mapUrl(r.geo);
+  const pt = point(r);
+  if (pt) {
+    mapLink.href = osmUrl(pt[0], pt[1]);
     mapLink.classList.remove("hidden");
   }
   node.querySelector(".card-specs").textContent = specLine(r.attributes);
@@ -366,6 +436,8 @@ function wireFilters() {
     rebuildFilters();
     render();
   });
+  $("#viewList").addEventListener("click", () => setView("list"));
+  $("#viewMap").addEventListener("click", () => setView("map"));
 }
 
 function wireGrid() {

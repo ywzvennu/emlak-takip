@@ -94,5 +94,9 @@
   "photoCount": {
     "message": "$count$ photos",
     "placeholders": { "count": { "content": "$1", "example": "12" } }
-  }
+  },
+
+  "viewList": { "message": "List" },
+  "viewMap": { "message": "Map" },
+  "mapNoGeo": { "message": "No saved listings with a location." }
 }

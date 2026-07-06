@@ -1,5 +1,6 @@
 import * as store from "../lib/store.js";
 import { t, localizeDom, categoryLabel, typeLabel } from "../lib/i18n.js";
+import { point, osmUrl } from "../lib/geo.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -84,9 +85,9 @@ function render(payload, saved) {
   }
 
   const map = $("maplink");
-  if (payload.geo && payload.geo.lat != null && payload.geo.lng != null) {
-    const { lat, lng } = payload.geo;
-    map.href = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;
+  const pt = point(payload);
+  if (pt) {
+    map.href = osmUrl(pt[0], pt[1]);
     map.classList.remove("hidden");
   } else {
     map.classList.add("hidden");

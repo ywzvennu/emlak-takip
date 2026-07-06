@@ -21,6 +21,12 @@ stays local in your own browser.
 - **Dashboard** (options page): filter by category / type / status / tag,
   full-text search, sort by date or price, edit inline, and **export/import** as
   JSON or CSV.
+- **Map view**: see all (filtered) saved listings as pins on a map, using the
+  captured coordinates. Uses a locally-bundled Leaflet and OpenStreetMap tiles —
+  the map tiles are the only third-party network request, and only when you open
+  the map.
+- **Full capture**: seller/agent contact (name, agency, phone), map coordinates,
+  the full description, gallery photos and every attribute row.
 - **Local-first, sync-ready**: data lives in `chrome.storage.local`; all storage
   goes through `src/lib/store.js`, so moving to `chrome.storage.sync` or a
   backend later is a one-file change.
@@ -56,6 +62,9 @@ src/
   lib/
     store.js       # the only file that touches chrome.storage
     i18n.js        # t(), localizeDom(), category/type/status label helpers
+    geo.js         # pure geo helpers (point/bounds/osmUrl) for the map view
+  vendor/
+    leaflet/       # bundled Leaflet (map view); no build step, no CDN
   popup/           # toolbar popup (preview + save)
   dashboard/       # options page (list, filter, edit, export/import)
   icons/           # generated PNGs
@@ -97,4 +106,3 @@ provider interface and the normalized record schema.
 - More provider adapters (Hepsiemlak, Emlakjet).
 - `chrome.storage.sync` toggle for cross-device sync.
 - Optional periodic price re-check via an alarm.
-- Map view of saved listings.

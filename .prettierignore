@@ -1,5 +1,6 @@
 node_modules/
 src/icons/
+src/vendor/
 *.min.js
 package-lock.json
 .claude/

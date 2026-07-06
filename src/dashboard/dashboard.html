@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../vendor/leaflet/leaflet.css" />
     <link rel="stylesheet" href="dashboard.css" />
     <title>İlanlarım — Emlak Takip</title>
   </head>
@@ -44,9 +45,19 @@
         class="btn tiny"
         data-i18n="resetFilters"
       ></button>
+      <div class="view-switch">
+        <button
+          id="viewList"
+          class="btn tiny active"
+          data-i18n="viewList"
+        ></button>
+        <button id="viewMap" class="btn tiny" data-i18n="viewMap"></button>
+      </div>
     </section>
 
     <main id="grid" class="grid"></main>
+    <div id="map" class="map hidden"></div>
+    <div id="mapNote" class="map-note hidden" data-i18n="mapNoGeo"></div>
     <div id="empty" class="empty hidden" data-i18n="emptyState"></div>
 
     <template id="card-tpl">
@@ -113,6 +124,7 @@
       </article>
     </template>
 
+    <script src="../vendor/leaflet/leaflet.js"></script>
     <script type="module" src="dashboard.js"></script>
   </body>
 </html>
