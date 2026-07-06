@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "__MSG_appDesc__",
   "default_locale": "tr",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "alarms"],
   "host_permissions": [
     "https://www.sahibinden.com/*",
     "https://www.hepsiemlak.com/*",

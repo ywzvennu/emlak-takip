@@ -18,6 +18,10 @@ stays local in your own browser.
 - **Your own fields**: free-text notes, custom tags, and a status.
 - **Price history**: revisiting a saved listing records the new price, so you can
   see drops/increases on the dashboard.
+- **Revisit reminder**: a periodic check badges the toolbar icon with how many
+  saved listings you haven't reopened in a week. It never fetches pages in the
+  background (staying DOM-only) — reopening a listing is what refreshes its
+  price.
 - **Dashboard** (options page): filter by category / type / status / tag,
   full-text search, sort by date or price, edit inline, and **export/import** as
   JSON or CSV.
@@ -105,4 +109,3 @@ provider interface and the normalized record schema.
 
 - More provider adapters (currently: Sahibinden, Hepsiemlak, Emlakjet).
 - `chrome.storage.sync` toggle for cross-device sync.
-- Optional periodic price re-check via an alarm.
