@@ -31,9 +31,10 @@ stays local in your own browser.
   the map.
 - **Full capture**: seller/agent contact (name, agency, phone), map coordinates,
   the full description, gallery photos and every attribute row.
-- **Local-first, sync-ready**: data lives in `chrome.storage.local`; all storage
-  goes through `src/lib/store.js`, so moving to `chrome.storage.sync` or a
-  backend later is a one-file change.
+- **Local-first, optional sync**: data lives in `chrome.storage.local` by
+  default; a dashboard toggle switches to `chrome.storage.sync` for cross-device
+  sync (falling back gracefully, without data loss, if the collection exceeds
+  sync's size limit). All storage goes through `src/lib/store.js`.
 
 ## Install (unpacked)
 
@@ -108,4 +109,4 @@ provider interface and the normalized record schema.
 ## Roadmap
 
 - More provider adapters (currently: Sahibinden, Hepsiemlak, Emlakjet).
-- `chrome.storage.sync` toggle for cross-device sync.
+- Sharded sync storage to support larger collections beyond the per-item limit.

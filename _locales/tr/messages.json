@@ -98,5 +98,16 @@
 
   "viewList": { "message": "Liste" },
   "viewMap": { "message": "Harita" },
-  "mapNoGeo": { "message": "Konumu olan kayıtlı ilan yok." }
+  "mapNoGeo": { "message": "Konumu olan kayıtlı ilan yok." },
+
+  "storageLocal": { "message": "Bu cihaz" },
+  "storageSync": { "message": "Hesapla senkron" },
+  "storageTip": { "message": "Kayıtlı ilanların nerede tutulacağı" },
+  "storageSyncFail": {
+    "message": "Senkronizasyon başarısız — veri, senkron boyut sınırını aşıyor. Bu cihazda tutuldu."
+  },
+  "storageMoved": {
+    "message": "$count$ ilan taşındı.",
+    "placeholders": { "count": { "content": "$1", "example": "12" } }
+  }
 }

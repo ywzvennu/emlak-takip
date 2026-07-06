@@ -98,5 +98,16 @@
 
   "viewList": { "message": "List" },
   "viewMap": { "message": "Map" },
-  "mapNoGeo": { "message": "No saved listings with a location." }
+  "mapNoGeo": { "message": "No saved listings with a location." },
+
+  "storageLocal": { "message": "This device" },
+  "storageSync": { "message": "Account sync" },
+  "storageTip": { "message": "Where your saved listings are stored" },
+  "storageSyncFail": {
+    "message": "Sync failed — the data exceeds the sync size limit. Kept on this device."
+  },
+  "storageMoved": {
+    "message": "$count$ listings moved.",
+    "placeholders": { "count": { "content": "$1", "example": "12" } }
+  }
 }

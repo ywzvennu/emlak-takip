@@ -161,3 +161,39 @@ test("importListings with replace clears existing data first", async () => {
   assert.equal(res.total, 1);
   assert.equal(await store.getByKey("sahibinden:12345"), null);
 });
+
+test("storage area defaults to local", async () => {
+  assert.equal(await store.getStorageArea(), "local");
+});
+
+test("setStorageArea moves data to sync and reads follow the area", async () => {
+  const { localBacking, syncBacking } = installChromeMock();
+  await store.upsert(payload());
+
+  const res = await store.setStorageArea("sync");
+  assert.equal(res.area, "sync");
+  assert.equal(res.moved, 1);
+  assert.equal(await store.getStorageArea(), "sync");
+
+  // data now lives in sync, and is gone from local
+  assert.ok(syncBacking.ilanlar);
+  assert.equal(localBacking.ilanlar, undefined);
+  assert.equal((await store.getAll()).length, 1);
+
+  // and a subsequent write goes to sync
+  await store.updateByKey("sahibinden:12345", { status: "elendi" });
+  assert.equal(syncBacking.ilanlar[0].status, "elendi");
+});
+
+test("setStorageArea falls back to local when data exceeds the sync quota", async () => {
+  installChromeMock({ syncItemLimit: 100 }); // tiny per-item limit
+  await store.upsert(payload());
+
+  const res = await store.setStorageArea("sync");
+  assert.equal(res.area, "local");
+  assert.ok(res.error, "an error is reported");
+
+  // nothing lost: still on local, still readable
+  assert.equal(await store.getStorageArea(), "local");
+  assert.equal((await store.getAll()).length, 1);
+});

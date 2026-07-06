@@ -617,9 +617,25 @@ function wireIo() {
   });
 }
 
+function wireStorage() {
+  const sel = $("#storageArea");
+  store.getStorageArea().then((a) => (sel.value = a));
+  sel.addEventListener("change", async (e) => {
+    const res = await store.setStorageArea(e.target.value);
+    if (res.error) {
+      alert(t("storageSyncFail"));
+      e.target.value = res.area; // stayed on the previous area; reflect that
+    } else if (res.moved) {
+      alert(t("storageMoved", String(res.moved)));
+    }
+    await reload();
+  });
+}
+
 // live-update if another surface (popup / content script) changes storage
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && changes.ilanlar) {
+chrome.storage.onChanged.addListener((changes) => {
+  // data may live in local or sync depending on the storage-area setting
+  if (changes.ilanlar) {
     state.all = store.normalizeList(changes.ilanlar.newValue || []);
     rebuildFilters();
     render();
@@ -631,4 +647,5 @@ localizeDom(); // static topbar / filters / empty state
 wireFilters();
 wireGrid();
 wireIo();
+wireStorage();
 reload();

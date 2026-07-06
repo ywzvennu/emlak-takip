@@ -11,6 +11,9 @@
 // provider "sahibinden" and a derived key.
 
 const KEY = "ilanlar";
+// The chosen storage area ("local" | "sync") is itself always kept in local,
+// so reading it never depends on the toggle.
+const SETTINGS_KEY = "emt_settings";
 
 // Canonical domain values. Human-readable labels live in src/lib/i18n.js so
 // they can be localized; keep the value order here as the display order.
@@ -44,13 +47,52 @@ export function normalizeList(list) {
   return Array.isArray(list) ? list.map(normalize) : [];
 }
 
+function areaFor(name) {
+  return name === "sync" ? chrome.storage.sync : chrome.storage.local;
+}
+
+async function getArea() {
+  const d = await chrome.storage.local.get(SETTINGS_KEY);
+  const s = d[SETTINGS_KEY];
+  return s && s.area === "sync" ? "sync" : "local";
+}
+
+export async function getStorageArea() {
+  return getArea();
+}
+
+// Switch where listings are stored, moving existing data across. If the target
+// is sync and the data doesn't fit (sync's per-item/total quota), the move is
+// aborted, the area is left unchanged, and nothing is lost.
+export async function setStorageArea(area) {
+  const target = area === "sync" ? "sync" : "local";
+  const current = await getArea();
+  if (target === current) return { area: current, moved: 0 };
+
+  const fromApi = areaFor(current);
+  const toApi = areaFor(target);
+  const data = await fromApi.get(KEY);
+  const list = normalizeList(data[KEY]);
+
+  try {
+    await toApi.set({ [KEY]: list });
+  } catch (e) {
+    return { area: current, moved: 0, error: String((e && e.message) || e) };
+  }
+  await chrome.storage.local.set({ [SETTINGS_KEY]: { area: target } });
+  if (fromApi.remove) await fromApi.remove(KEY);
+  return { area: target, moved: list.length };
+}
+
 async function read() {
-  const data = await chrome.storage.local.get(KEY);
+  const api = areaFor(await getArea());
+  const data = await api.get(KEY);
   return normalizeList(data[KEY]);
 }
 
 async function write(list) {
-  await chrome.storage.local.set({ [KEY]: list });
+  const api = areaFor(await getArea());
+  await api.set({ [KEY]: list });
 }
 
 export async function getAll() {

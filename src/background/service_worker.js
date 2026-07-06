@@ -44,9 +44,9 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === RECHECK_ALARM) refreshBadge();
 });
-// Keep the badge current whenever stored data changes.
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && changes.ilanlar) refreshBadge();
+// Keep the badge current whenever stored data changes (local or sync).
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.ilanlar) refreshBadge();
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
