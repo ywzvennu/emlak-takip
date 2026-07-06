@@ -1,0 +1,83 @@
+{
+  "appName": { "message": "Emlak Takip" },
+  "appDesc": { "message": "Emlak ilanlarını kaydet, notlandır, etiketle ve fiyat değişimini takip et." },
+  "actionTitle": { "message": "Emlak Takip" },
+
+  "btnSave": { "message": "Kaydet" },
+  "btnSaved": { "message": "Kaydedildi" },
+  "btnSaveTip": { "message": "Bu ilanı kaydet" },
+  "btnSavedTip": { "message": "Bu ilan kaydedildi — panele gitmek için tıkla" },
+  "toastReadFail": { "message": "İlan bilgileri okunamadı." },
+  "toastSaved": { "message": "İlan kaydedildi ✓" },
+  "toastUpdated": { "message": "İlan güncellendi ✓" },
+  "toastSaveFail": {
+    "message": "Kaydedilemedi: $error$",
+    "placeholders": { "error": { "content": "$1", "example": "hata" } }
+  },
+
+  "popupBrand": { "message": "Emlak Takip" },
+  "ilanCount": {
+    "message": "$count$ ilan",
+    "placeholders": { "count": { "content": "$1", "example": "12" } }
+  },
+  "popupLoading": { "message": "Sayfa okunuyor…" },
+  "popupNotFoundL1": { "message": "Bu sayfada bir ilan bulunamadı." },
+  "popupNotFoundL2": { "message": "Bir emlak ilanı detay sayfasında aç." },
+  "btnPanel": { "message": "Panelim" },
+  "btnSaveUpdate": { "message": "★ Kaydedildi — güncelle" },
+  "savedDone": { "message": "Kaydedildi ✓" },
+  "updatedDone": { "message": "Güncellendi ✓" },
+
+  "dashTitle": { "message": "İlanlarım — Emlak Takip" },
+  "dashHeading": { "message": "İlanlarım" },
+  "searchPlaceholder": { "message": "Ara: başlık, konum, not, etiket…" },
+  "exportJson": { "message": "JSON ↓" },
+  "exportCsv": { "message": "CSV ↓" },
+  "importBtn": { "message": "İçe aktar" },
+  "filterAllCategories": { "message": "Tüm kategoriler" },
+  "filterAllTypes": { "message": "Satılık + Kiralık" },
+  "filterAllStatuses": { "message": "Tüm durumlar" },
+  "filterAllTags": { "message": "Tüm etiketler" },
+  "resetFilters": { "message": "Sıfırla" },
+  "emptyState": { "message": "Henüz kayıtlı ilan yok. Bir emlak ilanı sayfasında Kaydet'e bas." },
+  "tagsPlaceholder": { "message": "etiket, etiket…" },
+  "tagsTip": { "message": "Etiketler (virgülle ayır)" },
+  "statusTip": { "message": "Durum" },
+  "notesPlaceholder": { "message": "Not ekle…" },
+  "priceHistoryBtn": { "message": "Fiyat geçmişi" },
+  "deleteBtn": { "message": "Sil" },
+  "addedOn": {
+    "message": "Eklendi: $date$",
+    "placeholders": { "date": { "content": "$1", "example": "6 Tem 2026" } }
+  },
+  "noPriceHistory": { "message": "Fiyat geçmişi yok." },
+  "confirmDelete": { "message": "Bu ilan silinsin mi?" },
+  "importResult": {
+    "message": "$added$ yeni ilan eklendi. Toplam: $total$.",
+    "placeholders": {
+      "added": { "content": "$1", "example": "3" },
+      "total": { "content": "$2", "example": "20" }
+    }
+  },
+  "importFail": {
+    "message": "İçe aktarma başarısız: $error$",
+    "placeholders": { "error": { "content": "$1", "example": "geçersiz dosya" } }
+  },
+
+  "sortSavedDesc": { "message": "Eklenme (yeni → eski)" },
+  "sortSavedAsc": { "message": "Eklenme (eski → yeni)" },
+  "sortPriceAsc": { "message": "Fiyat (artan)" },
+  "sortPriceDesc": { "message": "Fiyat (azalan)" },
+  "sortUpdated": { "message": "Son güncelleme" },
+
+  "catKonut": { "message": "Konut" },
+  "catTicari": { "message": "Ticari" },
+  "catArsa": { "message": "Arsa" },
+  "catDiger": { "message": "Diğer" },
+  "typeSatilik": { "message": "Satılık" },
+  "typeKiralik": { "message": "Kiralık" },
+  "statusKaydedildi": { "message": "Kaydedildi" },
+  "statusIlgileniliyor": { "message": "İlgileniliyor" },
+  "statusArandi": { "message": "Arandı" },
+  "statusElendi": { "message": "Elendi" }
+}

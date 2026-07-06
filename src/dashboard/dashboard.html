@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="dashboard.css" />
+    <title>İlanlarım — Emlak Takip</title>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">S</span>
+        <h1 data-i18n="dashHeading"></h1>
+        <span id="count" class="count"></span>
+      </div>
+      <div class="actions">
+        <input id="search" class="search" type="search" data-i18n-attr="placeholder:searchPlaceholder" />
+        <button id="exportJson" class="btn ghost" data-i18n="exportJson"></button>
+        <button id="exportCsv" class="btn ghost" data-i18n="exportCsv"></button>
+        <label class="btn ghost file">
+          <span data-i18n="importBtn"></span>
+          <input id="importFile" type="file" accept="application/json" hidden />
+        </label>
+      </div>
+    </header>
+
+    <section class="filters">
+      <select id="fCategory" class="sel"></select>
+      <select id="fType" class="sel"></select>
+      <select id="fStatus" class="sel"></select>
+      <select id="fTag" class="sel"></select>
+      <select id="sort" class="sel"></select>
+      <button id="clearFilters" class="btn tiny" data-i18n="resetFilters"></button>
+    </section>
+
+    <main id="grid" class="grid"></main>
+    <div id="empty" class="empty hidden" data-i18n="emptyState"></div>
+
+    <template id="card-tpl">
+      <article class="card">
+        <a class="card-thumb" target="_blank" rel="noopener">
+          <img alt="" />
+        </a>
+        <div class="card-body">
+          <div class="card-badges"></div>
+          <a class="card-title" target="_blank" rel="noopener"></a>
+          <div class="card-price">
+            <span class="price-now"></span>
+            <span class="price-delta"></span>
+          </div>
+          <div class="card-loc"></div>
+          <div class="card-specs"></div>
+
+          <div class="card-controls">
+            <select class="status-sel" data-i18n-attr="title:statusTip"></select>
+            <input class="tags-input" data-i18n-attr="placeholder:tagsPlaceholder;title:tagsTip" />
+          </div>
+          <textarea class="notes" rows="2" data-i18n-attr="placeholder:notesPlaceholder"></textarea>
+
+          <div class="card-foot">
+            <span class="saved-at"></span>
+            <div class="foot-actions">
+              <button class="btn tiny history-btn" data-i18n="priceHistoryBtn"></button>
+              <button class="btn tiny danger del-btn" data-i18n="deleteBtn"></button>
+            </div>
+          </div>
+          <div class="history hidden"></div>
+        </div>
+      </article>
+    </template>
+
+    <script type="module" src="dashboard.js"></script>
+  </body>
+</html>

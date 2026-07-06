@@ -1,0 +1,83 @@
+{
+  "appName": { "message": "Emlak Takip" },
+  "appDesc": { "message": "Save, note, tag and track price changes for real-estate listings." },
+  "actionTitle": { "message": "Emlak Takip" },
+
+  "btnSave": { "message": "Save" },
+  "btnSaved": { "message": "Saved" },
+  "btnSaveTip": { "message": "Save this listing" },
+  "btnSavedTip": { "message": "This listing is saved — click to open your panel" },
+  "toastReadFail": { "message": "Could not read listing details." },
+  "toastSaved": { "message": "Listing saved ✓" },
+  "toastUpdated": { "message": "Listing updated ✓" },
+  "toastSaveFail": {
+    "message": "Could not save: $error$",
+    "placeholders": { "error": { "content": "$1", "example": "error" } }
+  },
+
+  "popupBrand": { "message": "Emlak Takip" },
+  "ilanCount": {
+    "message": "$count$ listings",
+    "placeholders": { "count": { "content": "$1", "example": "12" } }
+  },
+  "popupLoading": { "message": "Reading page…" },
+  "popupNotFoundL1": { "message": "No listing found on this page." },
+  "popupNotFoundL2": { "message": "Open a real-estate listing detail page." },
+  "btnPanel": { "message": "My panel" },
+  "btnSaveUpdate": { "message": "★ Saved — update" },
+  "savedDone": { "message": "Saved ✓" },
+  "updatedDone": { "message": "Updated ✓" },
+
+  "dashTitle": { "message": "My Listings — Emlak Takip" },
+  "dashHeading": { "message": "My Listings" },
+  "searchPlaceholder": { "message": "Search: title, location, note, tag…" },
+  "exportJson": { "message": "JSON ↓" },
+  "exportCsv": { "message": "CSV ↓" },
+  "importBtn": { "message": "Import" },
+  "filterAllCategories": { "message": "All categories" },
+  "filterAllTypes": { "message": "For sale + rent" },
+  "filterAllStatuses": { "message": "All statuses" },
+  "filterAllTags": { "message": "All tags" },
+  "resetFilters": { "message": "Reset" },
+  "emptyState": { "message": "No saved listings yet. Click Save on a real-estate listing page." },
+  "tagsPlaceholder": { "message": "tag, tag…" },
+  "tagsTip": { "message": "Tags (comma separated)" },
+  "statusTip": { "message": "Status" },
+  "notesPlaceholder": { "message": "Add a note…" },
+  "priceHistoryBtn": { "message": "Price history" },
+  "deleteBtn": { "message": "Delete" },
+  "addedOn": {
+    "message": "Added: $date$",
+    "placeholders": { "date": { "content": "$1", "example": "Jul 6, 2026" } }
+  },
+  "noPriceHistory": { "message": "No price history." },
+  "confirmDelete": { "message": "Delete this listing?" },
+  "importResult": {
+    "message": "$added$ new listings added. Total: $total$.",
+    "placeholders": {
+      "added": { "content": "$1", "example": "3" },
+      "total": { "content": "$2", "example": "20" }
+    }
+  },
+  "importFail": {
+    "message": "Import failed: $error$",
+    "placeholders": { "error": { "content": "$1", "example": "invalid file" } }
+  },
+
+  "sortSavedDesc": { "message": "Added (new → old)" },
+  "sortSavedAsc": { "message": "Added (old → new)" },
+  "sortPriceAsc": { "message": "Price (ascending)" },
+  "sortPriceDesc": { "message": "Price (descending)" },
+  "sortUpdated": { "message": "Last updated" },
+
+  "catKonut": { "message": "Residential" },
+  "catTicari": { "message": "Commercial" },
+  "catArsa": { "message": "Land" },
+  "catDiger": { "message": "Other" },
+  "typeSatilik": { "message": "For sale" },
+  "typeKiralik": { "message": "For rent" },
+  "statusKaydedildi": { "message": "Saved" },
+  "statusIlgileniliyor": { "message": "Interested" },
+  "statusArandi": { "message": "Contacted" },
+  "statusElendi": { "message": "Rejected" }
+}

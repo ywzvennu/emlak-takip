@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>Emlak Takip</title>
+  </head>
+  <body>
+    <header class="head">
+      <div class="brand">
+        <span class="logo">S</span>
+        <span data-i18n="popupBrand"></span>
+      </div>
+      <span id="count" class="count"></span>
+    </header>
+
+    <main id="main">
+      <div id="loading" class="state" data-i18n="popupLoading"></div>
+
+      <section id="ilan" class="ilan hidden">
+        <img id="thumb" class="thumb" alt="" />
+        <div class="meta">
+          <div id="title" class="title"></div>
+          <div id="badges" class="badges"></div>
+          <div id="price" class="price"></div>
+          <div id="loc" class="loc"></div>
+          <div id="specs" class="specs"></div>
+        </div>
+      </section>
+
+      <div id="notfound" class="state hidden">
+        <div data-i18n="popupNotFoundL1"></div>
+        <div data-i18n="popupNotFoundL2"></div>
+      </div>
+    </main>
+
+    <footer class="foot">
+      <button id="save" class="btn primary hidden" data-i18n="btnSave"></button>
+      <button id="open" class="btn ghost" data-i18n="btnPanel"></button>
+    </footer>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
