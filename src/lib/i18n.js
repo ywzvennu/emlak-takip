@@ -23,20 +23,35 @@ function applyMessage(entry, subs) {
   return msg.replace(/\$\$/g, "$");
 }
 
-// Load an explicit locale's catalog, or clear the override for "auto".
-export async function initI18n(lang) {
-  if (!lang || lang === "auto") {
-    catalog = null;
-    return "auto";
-  }
+const AVAILABLE = ["tr", "en"];
+const DEFAULT_LOCALE = "tr";
+
+// Which catalog "auto" should use: the browser UI language if we have it,
+// otherwise the default locale (mirrors the manifest's default_locale).
+function resolveAuto() {
   try {
-    const url = chrome.runtime.getURL(`_locales/${lang}/messages.json`);
-    catalog = await (await fetch(url)).json();
-    return lang;
+    const ui = (chrome.i18n.getUILanguage?.() || "").toLowerCase();
+    const base = ui.split("-")[0];
+    return AVAILABLE.includes(base) ? base : DEFAULT_LOCALE;
   } catch {
-    catalog = null; // fall back to browser language
-    return "auto";
+    return DEFAULT_LOCALE;
   }
+}
+
+// Load the messages catalog for the chosen language (or the resolved browser
+// language for "auto") and translate from it. We read _locales JSON directly
+// rather than via chrome.i18n so newly added strings show on a normal reload —
+// chrome.i18n's message table is cached and doesn't refresh on a soft reload.
+export async function initI18n(lang) {
+  const explicit = lang && lang !== "auto" && AVAILABLE.includes(lang);
+  const target = explicit ? lang : resolveAuto();
+  try {
+    const url = chrome.runtime.getURL(`_locales/${target}/messages.json`);
+    catalog = await (await fetch(url)).json();
+  } catch {
+    catalog = null; // fall back to chrome.i18n at lookup time
+  }
+  return explicit ? lang : "auto";
 }
 
 // Look up a message. `subs` is a string or array of up to 9 substitutions.
