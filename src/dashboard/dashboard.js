@@ -2,6 +2,7 @@ import * as store from "../lib/store.js";
 import { STATUS_VALUES, CATEGORY_VALUES, TYPE_VALUES } from "../lib/store.js";
 import {
   t,
+  initI18n,
   localizeDom,
   categoryLabel,
   typeLabel,
@@ -624,6 +625,15 @@ function wireTheme() {
   sel.addEventListener("change", (e) => updateTheme(e.target.value));
 }
 
+function wireLang() {
+  const sel = $("#lang");
+  store.getLang().then((l) => (sel.value = l));
+  sel.addEventListener("change", async (e) => {
+    await store.setLang(e.target.value);
+    location.reload(); // re-render the whole UI in the chosen language
+  });
+}
+
 function wireStorage() {
   const sel = $("#storageArea");
   store.getStorageArea().then((a) => (sel.value = a));
@@ -649,11 +659,17 @@ chrome.storage.onChanged.addListener((changes) => {
   }
 });
 
-document.title = t("dashTitle");
-localizeDom(); // static topbar / filters / empty state
-wireFilters();
-wireGrid();
-wireIo();
-wireStorage();
-wireTheme();
-reload();
+async function boot() {
+  await initI18n(await store.getLang());
+  document.title = t("dashTitle");
+  localizeDom(); // static topbar / filters / empty state
+  wireFilters();
+  wireGrid();
+  wireIo();
+  wireStorage();
+  wireTheme();
+  wireLang();
+  reload();
+}
+
+boot();

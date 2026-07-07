@@ -114,5 +114,8 @@
   "themeTip": { "message": "Theme" },
   "themeSystem": { "message": "System" },
   "themeLight": { "message": "Light" },
-  "themeDark": { "message": "Dark" }
+  "themeDark": { "message": "Dark" },
+
+  "langTip": { "message": "Language" },
+  "langAuto": { "message": "Auto (browser)" }
 }

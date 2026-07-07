@@ -85,6 +85,11 @@ All user-facing strings live in `_locales/<lang>/messages.json` — never
 hardcoded. Turkish is the default (`default_locale`), English is included; the
 UI language follows the browser UI language automatically.
 
+A **Language** setting in the dashboard (Auto / Türkçe / English) overrides this
+for the extension's own pages (popup + dashboard) without changing your browser
+language — "Auto" keeps following the browser. The on-page floating **Kaydet**
+button is a content script and still follows the browser UI language.
+
 - **Manifest** strings use `__MSG_key__`.
 - **Static HTML** uses `data-i18n="key"` (text) and
   `data-i18n-attr="placeholder:key;title:key"` (attributes), applied by

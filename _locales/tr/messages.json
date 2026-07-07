@@ -114,5 +114,8 @@
   "themeTip": { "message": "Tema" },
   "themeSystem": { "message": "Sistem" },
   "themeLight": { "message": "Açık" },
-  "themeDark": { "message": "Koyu" }
+  "themeDark": { "message": "Koyu" },
+
+  "langTip": { "message": "Dil" },
+  "langAuto": { "message": "Otomatik (tarayıcı)" }
 }

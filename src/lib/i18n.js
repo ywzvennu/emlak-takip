@@ -1,8 +1,47 @@
 // i18n helpers for extension pages (popup, dashboard). Content scripts call
 // chrome.i18n.getMessage directly since they can't import modules.
+//
+// By default `t()` uses chrome.i18n (which follows the browser UI language).
+// When the user picks an explicit language, initI18n(lang) loads that locale's
+// messages.json and t() translates from it instead.
+
+let catalog = null; // active override catalog, or null to use chrome.i18n
+
+// Reproduce chrome.i18n's substitution for an override entry: named `$ph$`
+// placeholders resolve via `placeholders`, then `$1..$9` fill from `subs`.
+function applyMessage(entry, subs) {
+  const arr = Array.isArray(subs) ? subs : subs != null ? [subs] : [];
+  const ph = entry.placeholders || {};
+  let msg = String(entry.message).replace(/\$(\w+)\$/g, (m, name) => {
+    const p = ph[name] || ph[name.toLowerCase()];
+    return p && p.content != null ? p.content : m;
+  });
+  msg = msg.replace(/\$(\d)/g, (m, d) => {
+    const i = Number(d) - 1;
+    return i >= 0 && i < arr.length ? arr[i] : "";
+  });
+  return msg.replace(/\$\$/g, "$");
+}
+
+// Load an explicit locale's catalog, or clear the override for "auto".
+export async function initI18n(lang) {
+  if (!lang || lang === "auto") {
+    catalog = null;
+    return "auto";
+  }
+  try {
+    const url = chrome.runtime.getURL(`_locales/${lang}/messages.json`);
+    catalog = await (await fetch(url)).json();
+    return lang;
+  } catch {
+    catalog = null; // fall back to browser language
+    return "auto";
+  }
+}
 
 // Look up a message. `subs` is a string or array of up to 9 substitutions.
 export function t(key, subs) {
+  if (catalog && catalog[key]) return applyMessage(catalog[key], subs);
   return chrome.i18n.getMessage(key, subs) || key;
 }
 

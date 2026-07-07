@@ -84,6 +84,20 @@ export async function setTheme(theme) {
   return value;
 }
 
+// UI language for the extension pages: "auto" follows the browser.
+export const LANG_VALUES = ["auto", "tr", "en"];
+
+export async function getLang() {
+  const l = (await getSettings()).lang;
+  return LANG_VALUES.includes(l) ? l : "auto";
+}
+
+export async function setLang(lang) {
+  const value = LANG_VALUES.includes(lang) ? lang : "auto";
+  await patchSettings({ lang: value });
+  return value;
+}
+
 // Switch where listings are stored, moving existing data across. If the target
 // is sync and the data doesn't fit (sync's per-item/total quota), the move is
 // aborted, the area is left unchanged, and nothing is lost.
