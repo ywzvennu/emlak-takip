@@ -51,14 +51,37 @@ function areaFor(name) {
   return name === "sync" ? chrome.storage.sync : chrome.storage.local;
 }
 
-async function getArea() {
+// Extension settings (storage area, theme, …) always live in local, as one
+// object. Read/patch it as a whole so writing one field never clobbers another.
+async function getSettings() {
   const d = await chrome.storage.local.get(SETTINGS_KEY);
-  const s = d[SETTINGS_KEY];
-  return s && s.area === "sync" ? "sync" : "local";
+  return d[SETTINGS_KEY] || {};
+}
+
+async function patchSettings(patch) {
+  const s = await getSettings();
+  await chrome.storage.local.set({ [SETTINGS_KEY]: { ...s, ...patch } });
+}
+
+async function getArea() {
+  return (await getSettings()).area === "sync" ? "sync" : "local";
 }
 
 export async function getStorageArea() {
   return getArea();
+}
+
+export const THEME_VALUES = ["system", "light", "dark"];
+
+export async function getTheme() {
+  const t = (await getSettings()).theme;
+  return THEME_VALUES.includes(t) ? t : "system";
+}
+
+export async function setTheme(theme) {
+  const value = THEME_VALUES.includes(theme) ? theme : "system";
+  await patchSettings({ theme: value });
+  return value;
 }
 
 // Switch where listings are stored, moving existing data across. If the target
@@ -79,7 +102,7 @@ export async function setStorageArea(area) {
   } catch (e) {
     return { area: current, moved: 0, error: String((e && e.message) || e) };
   }
-  await chrome.storage.local.set({ [SETTINGS_KEY]: { area: target } });
+  await patchSettings({ area: target });
   if (fromApi.remove) await fromApi.remove(KEY);
   return { area: target, moved: list.length };
 }

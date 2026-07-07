@@ -8,6 +8,7 @@ import {
   statusLabel,
 } from "../lib/i18n.js";
 import { point, boundsOf, osmUrl } from "../lib/geo.js";
+import { initTheme, updateTheme } from "../lib/theme.js";
 
 /* global L */ // Leaflet, loaded as a classic script before this module
 
@@ -617,6 +618,12 @@ function wireIo() {
   });
 }
 
+function wireTheme() {
+  const sel = $("#theme");
+  initTheme().then((pref) => (sel.value = pref));
+  sel.addEventListener("change", (e) => updateTheme(e.target.value));
+}
+
 function wireStorage() {
   const sel = $("#storageArea");
   store.getStorageArea().then((a) => (sel.value = a));
@@ -648,4 +655,5 @@ wireFilters();
 wireGrid();
 wireIo();
 wireStorage();
+wireTheme();
 reload();

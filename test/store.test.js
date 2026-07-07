@@ -197,3 +197,20 @@ test("setStorageArea falls back to local when data exceeds the sync quota", asyn
   assert.equal(await store.getStorageArea(), "local");
   assert.equal((await store.getAll()).length, 1);
 });
+
+test("theme defaults to system and setTheme validates + persists", async () => {
+  assert.equal(await store.getTheme(), "system");
+  assert.equal(await store.setTheme("dark"), "dark");
+  assert.equal(await store.getTheme(), "dark");
+  // unknown value falls back to system
+  assert.equal(await store.setTheme("neon"), "system");
+  assert.equal(await store.getTheme(), "system");
+});
+
+test("changing the storage area does not clobber the theme setting", async () => {
+  await store.setTheme("dark");
+  await store.upsert(payload());
+  await store.setStorageArea("sync");
+  assert.equal(await store.getStorageArea(), "sync");
+  assert.equal(await store.getTheme(), "dark");
+});

@@ -109,5 +109,10 @@
   "storageMoved": {
     "message": "$count$ ilan taşındı.",
     "placeholders": { "count": { "content": "$1", "example": "12" } }
-  }
+  },
+
+  "themeTip": { "message": "Tema" },
+  "themeSystem": { "message": "Sistem" },
+  "themeLight": { "message": "Açık" },
+  "themeDark": { "message": "Koyu" }
 }

@@ -109,5 +109,10 @@
   "storageMoved": {
     "message": "$count$ listings moved.",
     "placeholders": { "count": { "content": "$1", "example": "12" } }
-  }
+  },
+
+  "themeTip": { "message": "Theme" },
+  "themeSystem": { "message": "System" },
+  "themeLight": { "message": "Light" },
+  "themeDark": { "message": "Dark" }
 }

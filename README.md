@@ -16,6 +16,8 @@ stays local in your own browser.
   il/ilçe/mahalle, the full attribute list (m², oda sayısı, bina yaşı, imar
   durumu, …), thumbnail and listing id.
 - **Your own fields**: free-text notes, custom tags, and a status.
+- **Light / dark theme**: a theme setting (System / Light / Dark) in the
+  dashboard; the popup follows it. "System" tracks your OS appearance live.
 - **Price history**: revisiting a saved listing records the new price, so you can
   see drops/increases on the dashboard.
 - **Revisit reminder**: a periodic check badges the toolbar icon with how many

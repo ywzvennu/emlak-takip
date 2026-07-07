@@ -3,6 +3,7 @@
 }
 
 :root {
+  color-scheme: light;
   --yellow: #ffe800;
   --ink: #1a1a1a;
   --muted: #6b6b6b;
@@ -11,6 +12,34 @@
   --card: #fff;
   --green: #2e7d32;
   --red: #c62828;
+  --surface: #fff;
+  --surface-2: #f0f0f0;
+  --panel: #fafafa;
+  --thumb: #ececec;
+  --badge-bg: #fff6b0;
+  --badge-line: #f0e08a;
+  --danger-line: #f3c6c6;
+  --danger-bg: #fdecec;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --yellow: #ffe800;
+  --ink: #e8e8e8;
+  --muted: #9aa0a6;
+  --line: #363a3f;
+  --bg: #141517;
+  --card: #1e2023;
+  --green: #66bb6a;
+  --red: #ef5350;
+  --surface: #22252a;
+  --surface-2: #2c3036;
+  --panel: #24272c;
+  --thumb: #2a2d31;
+  --badge-bg: #3a3410;
+  --badge-line: #5c5410;
+  --danger-line: #5c2a2a;
+  --danger-bg: #3a2020;
 }
 
 body {
@@ -35,7 +64,7 @@ body {
   gap: 16px;
   flex-wrap: wrap;
   padding: 12px 20px;
-  background: #fff;
+  background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
 
@@ -73,6 +102,8 @@ body {
   padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
   font-size: 13px;
 }
 
@@ -87,7 +118,8 @@ body {
   padding: 7px 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
+  color: var(--ink);
   font-size: 13px;
 }
 
@@ -97,12 +129,12 @@ body {
   font-weight: 600;
   border-radius: 8px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   cursor: pointer;
 }
 .btn.ghost:hover {
-  background: #f0f0f0;
+  background: var(--surface-2);
 }
 .btn.file {
   display: inline-flex;
@@ -114,10 +146,10 @@ body {
 }
 .btn.danger {
   color: var(--red);
-  border-color: #f3c6c6;
+  border-color: var(--danger-line);
 }
 .btn.danger:hover {
-  background: #fdecec;
+  background: var(--danger-bg);
 }
 
 .grid {
@@ -140,7 +172,7 @@ body {
 .card-thumb {
   display: block;
   height: 150px;
-  background: #ececec;
+  background: var(--thumb);
 }
 .card-thumb img {
   width: 100%;
@@ -168,8 +200,8 @@ body {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #fff6b0;
-  border: 1px solid #f0e08a;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-line);
 }
 
 .card-title {
@@ -229,6 +261,8 @@ body {
   padding: 6px 9px;
   border: 1px solid var(--line);
   border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
   font-size: 12px;
 }
 .notes {
@@ -237,6 +271,8 @@ body {
   padding: 7px 9px;
   border: 1px solid var(--line);
   border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
   font: inherit;
   font-size: 12px;
 }
@@ -259,7 +295,7 @@ body {
 .history {
   margin-top: 6px;
   padding: 8px 10px;
-  background: #fafafa;
+  background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 12px;
@@ -324,7 +360,7 @@ body {
 .desc {
   margin-top: 6px;
   padding: 8px 10px;
-  background: #fafafa;
+  background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 12px;
@@ -348,7 +384,7 @@ body {
 }
 .view-switch .btn.active {
   background: var(--ink);
-  color: #fff;
+  color: var(--card);
   border-color: var(--ink);
 }
 .map {
@@ -387,4 +423,22 @@ body {
 .map-pop .mp-loc {
   font-size: 12px;
   color: var(--muted);
+}
+
+/* --- dark-mode tweaks for the vendored Leaflet chrome --- */
+:root[data-theme="dark"] .leaflet-container {
+  background: #0f1113;
+}
+:root[data-theme="dark"] .leaflet-popup-content-wrapper,
+:root[data-theme="dark"] .leaflet-popup-tip,
+:root[data-theme="dark"] .leaflet-bar a,
+:root[data-theme="dark"] .leaflet-control-attribution {
+  background: var(--card);
+  color: var(--ink);
+}
+:root[data-theme="dark"] .leaflet-bar a {
+  border-bottom-color: var(--line);
+}
+:root[data-theme="dark"] .leaflet-control-attribution a {
+  color: var(--green);
 }

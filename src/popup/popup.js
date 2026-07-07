@@ -1,6 +1,7 @@
 import * as store from "../lib/store.js";
 import { t, localizeDom, categoryLabel, typeLabel } from "../lib/i18n.js";
 import { point, osmUrl } from "../lib/geo.js";
+import { initTheme } from "../lib/theme.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -108,6 +109,7 @@ async function refreshCount() {
 }
 
 async function main() {
+  initTheme();
   localizeDom();
   refreshCount();
 

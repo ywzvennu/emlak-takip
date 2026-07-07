@@ -3,11 +3,31 @@
 }
 
 :root {
+  color-scheme: light;
   --yellow: #ffe800;
   --ink: #1a1a1a;
   --muted: #6b6b6b;
   --line: #e6e6e6;
   --green: #2e7d32;
+  --bg: #fff;
+  --surface: #fff;
+  --thumb: #f2f2f2;
+  --badge-bg: #fff6b0;
+  --badge-line: #f0e08a;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --yellow: #ffe800;
+  --ink: #e8e8e8;
+  --muted: #9aa0a6;
+  --line: #363a3f;
+  --green: #66bb6a;
+  --bg: #17191c;
+  --surface: #22252a;
+  --thumb: #2a2d31;
+  --badge-bg: #3a3410;
+  --badge-line: #5c5410;
 }
 
 body {
@@ -20,7 +40,7 @@ body {
     Roboto,
     sans-serif;
   color: var(--ink);
-  background: #fff;
+  background: var(--bg);
 }
 
 .head {
@@ -74,7 +94,7 @@ body {
   height: 92px;
   object-fit: cover;
   border-radius: 8px;
-  background: #f2f2f2;
+  background: var(--thumb);
   flex: 0 0 auto;
 }
 
@@ -104,8 +124,8 @@ body {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #fff6b0;
-  border: 1px solid #f0e08a;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-line);
 }
 
 .price {
@@ -153,7 +173,7 @@ body {
   color: #fff;
 }
 .btn.ghost {
-  background: #fff;
+  background: var(--surface);
   border-color: var(--line);
   color: var(--ink);
 }
