@@ -70,7 +70,7 @@
   }
 
   async function onSaveClick() {
-    const payload = captureIlan();
+    const payload = await captureIlan();
     if (!payload) {
       toast(t("toastReadFail"));
       return;
@@ -95,7 +95,7 @@
       return;
     }
     ensureButton();
-    const payload = captureIlan();
+    const payload = await captureIlan();
     if (!payload) return; // detail URL, page not rendered yet — a retry follows
 
     const check = await send({ type: "CHECK_SAVED", key: payload.key });
@@ -134,7 +134,8 @@
   // Popup asks the active tab to capture what's on screen.
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg && msg.type === "CAPTURE") {
-      sendResponse({ ok: true, payload: captureIlan() });
+      captureIlan().then((payload) => sendResponse({ ok: true, payload }));
+      return true; // async response
     }
     return false;
   });

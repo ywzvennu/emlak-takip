@@ -269,7 +269,111 @@
     return m ? m[1] : null;
   }
 
+  // Extract the balanced { … } object that follows `"key":` in a text blob,
+  // respecting strings. Used to pull embedded state JSON out of inline scripts.
+  function sliceBalanced(text, start) {
+    let depth = 0;
+    let inStr = false;
+    let esc = false;
+    for (let p = start; p < text.length; p++) {
+      const c = text[p];
+      if (inStr) {
+        if (esc) esc = false;
+        else if (c === "\\") esc = true;
+        else if (c === '"') inStr = false;
+      } else if (c === '"') inStr = true;
+      else if (c === "{") depth++;
+      else if (c === "}" && --depth === 0) return text.slice(start, p + 1);
+    }
+    return null;
+  }
+
+  function extractJsonObject(text, key) {
+    const marker = `"${key}"`;
+    let i = text.indexOf(marker);
+    while (i !== -1) {
+      const colon = text.indexOf(":", i + marker.length);
+      if (colon !== -1) {
+        let p = colon + 1;
+        while (p < text.length && /\s/.test(text[p])) p++;
+        if (text[p] === "{") {
+          const obj = sliceBalanced(text, p);
+          if (obj) {
+            try {
+              return JSON.parse(obj);
+            } catch {
+              /* not JSON here — try the next occurrence */
+            }
+          }
+        }
+      }
+      i = text.indexOf(marker, i + marker.length);
+    }
+    return null;
+  }
+
+  // Find a state object embedded in an inline <script> (SPA transfer state).
+  // DOM-only, no network. `isValid` guards against false matches.
+  function embeddedJson(doc, key, isValid) {
+    for (const s of doc.querySelectorAll("script")) {
+      const txt = s.textContent;
+      if (!txt || txt.indexOf(`"${key}"`) === -1) continue;
+      const obj = extractJsonObject(txt, key);
+      if (obj && (!isValid || isValid(obj))) return obj;
+    }
+    return null;
+  }
+
+  // Read a site's own JSON API through the background worker (host_permissions,
+  // no page CSP). Resolves to the parsed data or null.
+  function fetchJson(url) {
+    return new Promise((resolve) => {
+      try {
+        chrome.runtime.sendMessage({ type: "FETCH_JSON", url }, (res) => {
+          if (chrome.runtime.lastError || !res || !res.ok) resolve(null);
+          else resolve(res.data);
+        });
+      } catch {
+        resolve(null);
+      }
+    });
+  }
+
+  function htmlToText(html) {
+    if (!html) return null;
+    const t = String(html)
+      .replace(/<\s*br\s*\/?>/gi, "\n")
+      .replace(/<\/(p|div|li|h[1-6])>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&amp;/gi, "&")
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">")
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/gi, '"')
+      .replace(/[ \t\u00a0]+/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+    return t || null;
+  }
+
+  // Everything the page exposes in meta + JSON-LD, kept as a raw fallback.
+  function rawSignals(doc) {
+    const meta = {};
+    doc
+      .querySelectorAll('meta[property^="og:"], meta[name="description"]')
+      .forEach((m) => {
+        const k = m.getAttribute("property") || m.getAttribute("name");
+        if (k && m.content) meta[k] = m.content;
+      });
+    return { meta, jsonld: jsonld(doc) };
+  }
+
   root.EmlakTakipUtil = {
+    embeddedJson,
+    fetchJson,
+    htmlToText,
+    rawSignals,
     q,
     qa,
     text,

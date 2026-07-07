@@ -271,6 +271,8 @@
     ilanTarihi(doc, url) {
       return this.attributes(doc, url)["İlan Tarihi"] || null;
     },
+    // Sahibinden is fully DOM-mapped above; keep meta + JSON-LD as extra raw.
+    raw: (doc) => U.rawSignals(doc),
   };
 
   if (root.EmlakTakip && root.EmlakTakip.register)

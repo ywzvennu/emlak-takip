@@ -3,3 +3,6 @@ dist/
 *.zip
 .DS_Store
 __pycache__/
+
+# never commit HAR captures (may contain session data)
+*.har

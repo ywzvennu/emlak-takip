@@ -2,47 +2,53 @@
 <html lang="tr">
   <head>
     <meta charset="utf-8" />
-    <meta property="og:title" content="Örnek 3+1 Daire (og)" />
-    <meta property="og:image" content="https://img.hepsiemlak.com/og.jpg" />
+    <meta property="og:title" content="Örnek 3+1 (og)" />
     <title>Hepsiemlak</title>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": "Örnek 3+1 Satılık Daire",
-        "description": "Deniz manzaralı, ferah daire.",
-        "image": [
-          "https://img.hepsiemlak.com/a.jpg",
-          "https://img.hepsiemlak.com/b.jpg"
-        ],
-        "sku": "11223344",
-        "offers": {
-          "@type": "Offer",
-          "price": "4750000",
-          "priceCurrency": "TRY",
-          "seller": {
-            "@type": "Organization",
-            "name": "Örnek Emlak Ofisi",
-            "telephone": "+902161112233",
-            "url": "https://www.hepsiemlak.com/emlak-ofisi/ornek"
-          }
+    <!-- The page embeds the full realtyDetail JSON in an inline script; the
+         provider reads it from the DOM (no network). Values are synthetic.
+         (This file is prettier-ignored so the JSON keys stay quoted.) -->
+    <script>
+      window.__STATE__ = {"realtyDetail": {
+        "listingId": "123456-7",
+        "realtyId": 999001,
+        "title": "Örnek 3+1 Satılık Daire",
+        "price": 24100000,
+        "currency": "TL",
+        "description": "<p>Örnek açıklama.</p><p>İkinci paragraf.</p>",
+        "images": ["ds01/a/1.jpg", "ds01/a/2.jpg"],
+        "city": {"name": "İl A"},
+        "county": {"name": "İlçe B"},
+        "district": {"name": "Mahalle C"},
+        "mapLocation": {"lat": 10.0, "lon": 20.0},
+        "isMapHidden": false,
+        "sqm": {"netSqm": 117, "grossSqm": [131]},
+        "room": [3],
+        "livingRoom": [1],
+        "bathRoom": 2,
+        "age": 1,
+        "floor": {"name": "1. Kat", "count": 3},
+        "heating": {"name": "Kombi"},
+        "landRegisterName": "Kat Mülkiyeti",
+        "furnished": false,
+        "usage": {"name": "Boş"},
+        "credit": {"name": "Uygun"},
+        "category": {"typeName": "Satılık"},
+        "subCategory": {"typeName": "Daire"},
+        "mainCategory": {"name": "Konut"},
+        "firm": {"name": "Örnek Emlak Ofisi"},
+        "firmUser": {
+          "firstName": "Ad",
+          "lastName": "Soyad",
+          "phones": [{"countryCode": "+90", "areaCode": "555", "phoneNumber": "0001122"}],
+          "url": null
         },
-        "address": {
-          "@type": "PostalAddress",
-          "addressRegion": "Örnek İl",
-          "addressLocality": "Örnek İlçe",
-          "streetAddress": "Örnek Mahalle Mah."
+        "attributes": {
+          "inAttributes": [{"name": "Ankastre Fırın"}, {"name": "Ebeveyn Banyolu"}],
+          "outAttributes": [{"name": "Otopark"}]
         },
-        "geo": {
-          "@type": "GeoCoordinates",
-          "latitude": 10.0,
-          "longitude": 20.0
-        },
-        "additionalProperty": [
-          { "@type": "PropertyValue", "name": "Oda Sayısı", "value": "3+1" },
-          { "@type": "PropertyValue", "name": "m²", "value": "140" }
-        ]
-      }
+        "sides": ["Kuzey", "Güney"],
+        "startDate": "2026-01-01T00:00:00.000+00:00"
+      }};
     </script>
   </head>
   <body>

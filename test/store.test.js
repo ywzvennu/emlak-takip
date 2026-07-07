@@ -22,7 +22,7 @@ function payload(overrides = {}) {
     category: "konut",
     listingType: "satilik",
     price: { amount: 2500000, currency: "TL", raw: "2.500.000 TL" },
-    location: { il: "Örnek İl", ilce: "Örnek İlçe", mahalle: "Örnek Mahalle", raw: null },
+    location: { il: "İl A", ilce: "İlçe B", mahalle: "Mahalle C", raw: null },
     attributes: { "m² (Brüt)": "120", "Oda Sayısı": "3+1" },
     thumbnail: "https://img/1.jpg",
     ilanTarihi: "01.07.2026",

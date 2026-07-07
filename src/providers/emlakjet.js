@@ -25,6 +25,9 @@
     photos: (doc) => U.jPhotos(doc),
     thumbnail: (doc) => U.jThumbnail(doc),
     ilanTarihi: (doc) => U.jDate(doc),
+    // Emlakjet's listing API isn't publicly reachable; keep all meta + JSON-LD
+    // as the raw payload so nothing available is lost.
+    raw: (doc) => U.rawSignals(doc),
   };
 
   if (root.EmlakTakip && root.EmlakTakip.register)

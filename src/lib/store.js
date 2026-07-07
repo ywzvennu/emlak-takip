@@ -215,6 +215,7 @@ export async function upsert(payload) {
     contact: payload.contact ?? existing.contact,
     description: payload.description ?? existing.description,
     photos: payload.photos ?? existing.photos,
+    raw: payload.raw ?? existing.raw,
     thumbnail: payload.thumbnail ?? existing.thumbnail,
     ilanTarihi: payload.ilanTarihi ?? existing.ilanTarihi,
     price: payload.price ?? existing.price,

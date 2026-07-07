@@ -35,21 +35,43 @@
     return null;
   }
 
-  function call(provider, name, doc, url) {
+  function call(provider, name, doc, url, data) {
     const fn = provider[name];
     if (typeof fn !== "function") return undefined;
     try {
-      return fn.call(provider, doc, url);
+      return fn.call(provider, doc, url, data);
     } catch {
       return undefined;
     }
   }
 
-  // Assemble the normalized record by calling each field method. Returns null if
-  // the provider can't determine a listing id (i.e. this isn't a detail page).
-  function buildRecord(provider, doc, url) {
+  // Assemble the normalized record by calling each field method. If the provider
+  // exposes async fetchData(url), its result is fetched once and passed to every
+  // field method as the 3rd arg. `raw` keeps the fullest source payload so no
+  // detail is lost regardless of the normalized model. Returns null if there's
+  // no listing id (i.e. this isn't a detail page). Async.
+  async function buildRecord(provider, doc, url) {
     const clean = (url || "").split("#")[0];
-    const idRaw = call(provider, "ilanNo", doc, clean);
+
+    // A provider may declare an ordered list of data sources (each returns a
+    // data object or null): e.g. embedded-state (DOM) first, its API as a
+    // fallback. The first that yields data is passed to every field method.
+    let data = null;
+    const sources = Array.isArray(provider.sources)
+      ? provider.sources
+      : typeof provider.fetchData === "function"
+        ? [provider.fetchData]
+        : [];
+    for (const src of sources) {
+      try {
+        data = await src.call(provider, doc, clean);
+      } catch {
+        data = null;
+      }
+      if (data) break;
+    }
+
+    const idRaw = call(provider, "ilanNo", doc, clean, data);
     const ilanNo = idRaw ? String(idRaw) : null;
     if (!ilanNo) return null;
 
@@ -61,9 +83,11 @@
       capturedAt: Date.now(),
     };
     for (const f of FIELDS) {
-      const v = call(provider, f, doc, clean);
+      const v = call(provider, f, doc, clean, data);
       rec[f] = v === undefined || v === null ? defaultFor(f) : v;
     }
+    const raw = call(provider, "raw", doc, clean, data);
+    rec.raw = raw === undefined ? (data ?? null) : raw;
     return rec;
   }
 

@@ -1,6 +1,7 @@
 node_modules/
 src/icons/
 src/vendor/
+test/fixtures/
 *.min.js
 package-lock.json
 .claude/
