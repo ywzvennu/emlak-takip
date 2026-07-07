@@ -1,12 +1,15 @@
-// Content script (classic, runs after capture.js). Owns everything that touches
-// the page UI and talks to the background worker:
-//   - injects a floating "Kaydet" button on ilan detail pages
+// Content script (classic, runs after capture.js). Owns the page UI and talks
+// to the background worker:
+//   - injects a floating "Kaydet" button on listing detail pages
+//   - reflects saved state, auto-saves (if enabled), sends a passive SEEN ping
 //   - responds to the popup's CAPTURE request
-//   - on load, sends a passive SEEN ping so price history can grow
-
+//
+// SPA-aware: hepsiemlak/emlakjet change the URL client-side, so we re-run on
+// every URL change (poll + popstate), not just the initial load.
 (function () {
-  const { captureIlan, isIlanDetail } = self.EmlakTakipCapture || {};
-  if (!captureIlan || !isIlanDetail || !isIlanDetail()) return;
+  const cap = self.EmlakTakipCapture;
+  if (!cap || !cap.captureIlan) return;
+  const { captureIlan, isIlanDetail } = cap;
 
   const t = (key, subs) => chrome.i18n.getMessage(key, subs) || key;
 
@@ -37,13 +40,28 @@
     el._t = setTimeout(() => el.classList.remove("emt-toast--show"), 2200);
   }
 
-  const btn = document.createElement("button");
-  btn.id = "emt-save-btn";
-  btn.type = "button";
-  setButton(false);
-  document.body.appendChild(btn);
+  let btn = null;
+
+  function ensureButton() {
+    if (btn && btn.isConnected) return btn;
+    btn = document.createElement("button");
+    btn.id = "emt-save-btn";
+    btn.type = "button";
+    btn.addEventListener("click", onSaveClick);
+    setButton(false);
+    document.body.appendChild(btn);
+    return btn;
+  }
+
+  function removeButton() {
+    if (btn) {
+      btn.remove();
+      btn = null;
+    }
+  }
 
   function setButton(saved) {
+    if (!btn) return;
     btn.classList.toggle("emt-saved", saved);
     const star = saved ? "★" : "☆";
     const label = saved ? t("btnSaved") : t("btnSave");
@@ -51,7 +69,7 @@
     btn.title = saved ? t("btnSavedTip") : t("btnSaveTip");
   }
 
-  btn.addEventListener("click", async () => {
+  async function onSaveClick() {
     const payload = captureIlan();
     if (!payload) {
       toast(t("toastReadFail"));
@@ -66,15 +84,25 @@
     } else {
       toast(t("toastSaveFail", (res && res.error) || "?"));
     }
-  });
+  }
 
-  // Reflect current saved state, auto-save if enabled, and record a passive
-  // view for price history.
-  (async () => {
+  // Once per listing (keyed) we auto-save / send the passive SEEN ping.
+  const handled = new Set();
+
+  async function process() {
+    if (!isIlanDetail()) {
+      removeButton();
+      return;
+    }
+    ensureButton();
     const payload = captureIlan();
-    if (!payload) return;
+    if (!payload) return; // detail URL, page not rendered yet — a retry follows
+
     const check = await send({ type: "CHECK_SAVED", key: payload.key });
     if (check && check.ok) setButton(check.saved);
+
+    if (handled.has(payload.key)) return;
+    handled.add(payload.key);
 
     if (!check || !check.saved) {
       const auto = await send({ type: "MAYBE_AUTOSAVE", payload });
@@ -84,7 +112,24 @@
       }
     }
     send({ type: "SEEN_ILAN", payload });
-  })();
+  }
+
+  // Run now and once more shortly after, to catch content the SPA renders late.
+  function trigger() {
+    process();
+    setTimeout(process, 1200);
+  }
+
+  trigger();
+
+  let lastHref = location.href;
+  setInterval(() => {
+    if (location.href !== lastHref) {
+      lastHref = location.href;
+      trigger();
+    }
+  }, 800);
+  window.addEventListener("popstate", trigger);
 
   // Popup asks the active tab to capture what's on screen.
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

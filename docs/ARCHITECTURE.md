@@ -65,8 +65,9 @@ Two extraction strategies, both behind the same contract:
   Field methods read schema.org JSON-LD when present, else fall back to og-meta
   and a BreadcrumbList (e.g. emlakjet exposes only breadcrumbs plus og). The
   listing id is the longest digit-run in the URL, so ids after `-` or `/` both
-  work. Capture runs on a full page load of the detail URL (client-side
-  navigation does not re-run the content script).
+  work. `inject.js` is SPA-aware — it watches for client-side URL changes
+  (poll + popstate) and re-runs the button/capture/auto-save logic, so reaching
+  a listing by clicking within the site works, not just direct loads.
 
 ### Adding a provider
 
