@@ -75,7 +75,7 @@ test("hepsiemlak: everything from the embedded state JSON (no network)", async (
   assert.equal(rec.location.ilce, "İlçe B");
   assert.equal(rec.location.mahalle, "Mahalle C");
   assert.equal(rec.geo.source, "site");
-  assert.ok(Math.abs(rec.geo.lat - 10.0) < 1e-6);
+  assert.ok(Math.abs(rec.geo.lat - 41.0086) < 1e-6);
   assert.equal(rec.attributes["m² (Net)"], "117");
   assert.equal(rec.attributes["Oda Sayısı"], "3+1");
   assert.equal(rec.attributes["Isıtma"], "Kombi");
