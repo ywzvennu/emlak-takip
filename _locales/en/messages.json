@@ -120,5 +120,11 @@
   "langAuto": { "message": "Auto (browser)" },
 
   "featuresBtn": { "message": "Features" },
-  "noFeatures": { "message": "No features listed." }
+  "noFeatures": { "message": "No features listed." },
+
+  "autoSaveLabel": { "message": "Auto-save" },
+  "autoSaveTip": {
+    "message": "Automatically save supported listings when their page opens"
+  },
+  "toastAutoSaved": { "message": "Auto-saved ✓" }
 }

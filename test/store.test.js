@@ -214,3 +214,12 @@ test("changing the storage area does not clobber the theme setting", async () =>
   assert.equal(await store.getStorageArea(), "sync");
   assert.equal(await store.getTheme(), "dark");
 });
+
+test("auto-save defaults off, persists, and coexists with other settings", async () => {
+  assert.equal(await store.getAutoSave(), false);
+  await store.setTheme("dark");
+  assert.equal(await store.setAutoSave(true), true);
+  assert.equal(await store.getAutoSave(), true);
+  // did not clobber theme
+  assert.equal(await store.getTheme(), "dark");
+});

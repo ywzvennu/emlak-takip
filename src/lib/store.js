@@ -98,6 +98,17 @@ export async function setLang(lang) {
   return value;
 }
 
+// Auto-save: when on, supported listings are saved on page load without the
+// user clicking.
+export async function getAutoSave() {
+  return !!(await getSettings()).autoSave;
+}
+
+export async function setAutoSave(on) {
+  await patchSettings({ autoSave: !!on });
+  return !!on;
+}
+
 // Switch where listings are stored, moving existing data across. If the target
 // is sync and the data doesn't fit (sync's per-item/total quota), the move is
 // aborted, the area is left unchanged, and nothing is lost.

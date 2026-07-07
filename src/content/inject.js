@@ -68,12 +68,21 @@
     }
   });
 
-  // Reflect current saved state + record a passive view for price history.
+  // Reflect current saved state, auto-save if enabled, and record a passive
+  // view for price history.
   (async () => {
     const payload = captureIlan();
     if (!payload) return;
     const check = await send({ type: "CHECK_SAVED", key: payload.key });
     if (check && check.ok) setButton(check.saved);
+
+    if (!check || !check.saved) {
+      const auto = await send({ type: "MAYBE_AUTOSAVE", payload });
+      if (auto && auto.ok && auto.saved) {
+        setButton(true);
+        if (auto.created) toast(t("toastAutoSaved"));
+      }
+    }
     send({ type: "SEEN_ILAN", payload });
   })();
 

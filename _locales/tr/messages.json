@@ -120,5 +120,11 @@
   "langAuto": { "message": "Otomatik (tarayıcı)" },
 
   "featuresBtn": { "message": "Özellikler" },
-  "noFeatures": { "message": "Özellik belirtilmemiş." }
+  "noFeatures": { "message": "Özellik belirtilmemiş." },
+
+  "autoSaveLabel": { "message": "Otomatik kaydet" },
+  "autoSaveTip": {
+    "message": "Desteklenen ilanları sayfa açıldığında otomatik kaydet"
+  },
+  "toastAutoSaved": { "message": "Otomatik kaydedildi ✓" }
 }

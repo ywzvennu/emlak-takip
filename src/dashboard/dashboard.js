@@ -665,6 +665,12 @@ function wireLang() {
   });
 }
 
+function wireAutoSave() {
+  const el = $("#autoSave");
+  store.getAutoSave().then((on) => (el.checked = on));
+  el.addEventListener("change", (e) => store.setAutoSave(e.target.checked));
+}
+
 function wireStorage() {
   const sel = $("#storageArea");
   store.getStorageArea().then((a) => (sel.value = a));
@@ -698,6 +704,7 @@ async function boot() {
   wireGrid();
   wireIo();
   wireStorage();
+  wireAutoSave();
   wireTheme();
   wireLang();
   reload();

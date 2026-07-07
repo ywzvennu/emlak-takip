@@ -63,6 +63,26 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           sendResponse({ ok: true, ...res });
           break;
         }
+        case "MAYBE_AUTOSAVE": {
+          // Save on load only when auto-save is enabled and it isn't saved yet.
+          if (!(await store.getAutoSave())) {
+            sendResponse({ ok: true, autoSave: false, saved: false });
+            break;
+          }
+          const existing = await store.getByKey(msg.payload.key);
+          if (existing) {
+            sendResponse({
+              ok: true,
+              autoSave: true,
+              saved: true,
+              created: false,
+            });
+            break;
+          }
+          const res = await store.upsert(msg.payload);
+          sendResponse({ ok: true, autoSave: true, saved: true, ...res });
+          break;
+        }
         case "CHECK_SAVED": {
           const record = await store.getByKey(msg.key);
           sendResponse({ ok: true, saved: !!record, record });

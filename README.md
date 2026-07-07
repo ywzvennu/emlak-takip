@@ -12,6 +12,8 @@ stays local in your own browser.
 
 - **Two ways to save**: a floating **Kaydet** button injected on listing detail
   pages, plus a toolbar popup that previews the parsed listing.
+- **Auto-save mode** (optional): a dashboard toggle that saves supported
+  listings automatically as their page opens — no clicking.
 - **Captures the relevant fields**: title, price + currency, category & type,
   il/ilçe/mahalle, the full attribute list (m², oda sayısı, bina yaşı, imar
   durumu, …), thumbnail and listing id.
