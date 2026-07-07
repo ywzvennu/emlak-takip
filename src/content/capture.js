@@ -1,11 +1,9 @@
-// Content script (classic, shares scope with the providers and inject.js).
+// Content script (classic, shares scope with providers + inject.js).
 //
-// Generic dispatcher: it holds no site-specific selectors. It asks the provider
-// registry which provider claims the current URL and delegates parsing to it,
-// then stamps the normalized record with `provider` and the composite `key`
-// (provider:ilanNo) used everywhere downstream for identity.
-//
-// No network requests — providers read only the DOM of the page already open.
+// Generic dispatcher: finds the provider whose matches(url) claims the current
+// URL and asks the registry to assemble a record from that provider's field
+// methods. No site-specific logic here. No network — providers read only the
+// DOM of the page already open.
 (function () {
   const root = typeof self !== "undefined" ? self : globalThis;
   const registry = root.EmlakTakip;
@@ -14,24 +12,22 @@
     return registry ? registry.getProvider(location.href) : null;
   }
 
+  // Light check for "is this a listing detail page": a matching provider that
+  // can read a listing id here. Avoids a full parse on every matched page.
   function isIlanDetail() {
-    return !!currentProvider();
+    const p = currentProvider();
+    if (!p) return false;
+    try {
+      return !!p.ilanNo(document, location.href.split("#")[0]);
+    } catch {
+      return false;
+    }
   }
 
   function captureIlan() {
     const provider = currentProvider();
     if (!provider) return null;
-    const url = location.href.split("#")[0];
-    let rec;
-    try {
-      rec = provider.parse(document, url);
-    } catch {
-      return null;
-    }
-    if (!rec || !rec.ilanNo) return null;
-    rec.provider = provider.id;
-    rec.key = `${provider.id}:${rec.ilanNo}`;
-    return rec;
+    return registry.buildRecord(provider, document, location.href);
   }
 
   root.EmlakTakipCapture = { captureIlan, isIlanDetail };

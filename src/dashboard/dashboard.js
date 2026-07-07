@@ -344,6 +344,8 @@ function buildCard(tpl, r) {
   }
 
   if (r.description) node.querySelector(".desc-btn").classList.remove("hidden");
+  if (r.features && Object.keys(r.features).length)
+    node.querySelector(".features-btn").classList.remove("hidden");
 
   const statusSel = node.querySelector(".status-sel");
   statusSel.innerHTML = STATUS_VALUES.map(
@@ -384,6 +386,22 @@ function renderHistory(container, record) {
       }
       return `<div class="hist-row"><span>${fmtDate(p.at)}</span><span>${fmtPrice(p)}${tag}</span></div>`;
     })
+    .join("");
+}
+
+function renderFeatures(container, record) {
+  const groups = Object.entries((record && record.features) || {});
+  if (!groups.length) {
+    container.innerHTML = "<em>" + t("noFeatures") + "</em>";
+    return;
+  }
+  container.innerHTML = groups
+    .map(
+      ([group, items]) =>
+        `<div class="feat-group"><strong>${escapeHtml(group)}</strong>: ${items
+          .map(escapeHtml)
+          .join(", ")}</div>`
+    )
     .join("");
 }
 
@@ -505,6 +523,15 @@ function wireGrid() {
         const rec = state.all.find((x) => x.key === key);
         box.textContent = (rec && rec.description) || t("noDescription");
       }
+    } else if (e.target.classList.contains("features-btn")) {
+      const box = card.querySelector(".features-box");
+      box.classList.toggle("hidden");
+      if (!box.classList.contains("hidden")) {
+        renderFeatures(
+          box,
+          state.all.find((x) => x.key === key)
+        );
+      }
     }
   });
 }
@@ -548,6 +575,7 @@ function toCsv(list) {
     "phone",
     "lat",
     "lng",
+    "features",
     "description",
     "savedAt",
     "url",
@@ -575,6 +603,9 @@ function toCsv(list) {
       r.contact ? (r.contact.phones || []).join("|") : "",
       r.geo ? r.geo.lat : "",
       r.geo ? r.geo.lng : "",
+      Object.entries(r.features || {})
+        .map(([g, items]) => `${g}: ${items.join("/")}`)
+        .join(" | "),
       r.description || "",
       r.savedAt ? new Date(r.savedAt).toISOString() : "",
       r.url,

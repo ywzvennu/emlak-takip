@@ -117,5 +117,8 @@
   "themeDark": { "message": "Koyu" },
 
   "langTip": { "message": "Dil" },
-  "langAuto": { "message": "Otomatik (tarayıcı)" }
+  "langAuto": { "message": "Otomatik (tarayıcı)" },
+
+  "featuresBtn": { "message": "Özellikler" },
+  "noFeatures": { "message": "Özellik belirtilmemiş." }
 }

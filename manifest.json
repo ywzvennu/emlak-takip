@@ -32,7 +32,7 @@
       ],
       "js": [
         "src/providers/registry.js",
-        "src/providers/jsonld.js",
+        "src/providers/util.js",
         "src/providers/sahibinden.js",
         "src/providers/hepsiemlak.js",
         "src/providers/emlakjet.js",

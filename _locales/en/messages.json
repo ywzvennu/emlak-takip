@@ -117,5 +117,8 @@
   "themeDark": { "message": "Dark" },
 
   "langTip": { "message": "Language" },
-  "langAuto": { "message": "Auto (browser)" }
+  "langAuto": { "message": "Auto (browser)" },
+
+  "featuresBtn": { "message": "Features" },
+  "noFeatures": { "message": "No features listed." }
 }

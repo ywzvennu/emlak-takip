@@ -200,6 +200,7 @@ export async function upsert(payload) {
     location: payload.location ?? existing.location,
     geo: payload.geo ?? existing.geo,
     attributes: payload.attributes ?? existing.attributes,
+    features: payload.features ?? existing.features,
     contact: payload.contact ?? existing.contact,
     description: payload.description ?? existing.description,
     photos: payload.photos ?? existing.photos,
