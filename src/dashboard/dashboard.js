@@ -348,6 +348,10 @@ function buildCard(tpl, r) {
   if (r.description) node.querySelector(".desc-btn").classList.remove("hidden");
   if (r.features && Object.keys(r.features).length)
     node.querySelector(".features-btn").classList.remove("hidden");
+  if (r.attributes && Object.keys(r.attributes).length)
+    node.querySelector(".attrs-btn").classList.remove("hidden");
+  if (r.photos && r.photos.length)
+    node.querySelector(".gallery-btn").classList.remove("hidden");
 
   const statusSel = node.querySelector(".status-sel");
   statusSel.innerHTML = STATUS_VALUES.map(
@@ -393,6 +397,34 @@ function renderHistory(container, record) {
       }
       return `<div class="hist-row"><span>${fmtDate(p.at)}</span><span>${fmtPrice(p)}${tag}</span></div>`;
     })
+    .join("");
+}
+
+function renderAttrs(container, record) {
+  const rows = Object.entries((record && record.attributes) || {});
+  if (!rows.length) {
+    container.innerHTML = "<em>—</em>";
+    return;
+  }
+  container.innerHTML = rows
+    .map(
+      ([k, v]) =>
+        `<div class="attr-row"><span class="attr-k">${escapeHtml(k)}</span><span class="attr-v">${escapeHtml(v)}</span></div>`
+    )
+    .join("");
+}
+
+function renderGallery(container, record) {
+  const photos = (record && record.photos) || [];
+  if (!photos.length) {
+    container.innerHTML = "<em>—</em>";
+    return;
+  }
+  container.innerHTML = photos
+    .map(
+      (src) =>
+        `<a href="${escapeHtml(src)}" target="_blank" rel="noopener"><img loading="lazy" src="${escapeHtml(src)}" alt="" /></a>`
+    )
     .join("");
 }
 
@@ -539,6 +571,24 @@ function wireGrid() {
       box.classList.toggle("hidden");
       if (!box.classList.contains("hidden")) {
         renderFeatures(
+          box,
+          state.all.find((x) => x.key === key)
+        );
+      }
+    } else if (e.target.classList.contains("attrs-btn")) {
+      const box = card.querySelector(".attrs-box");
+      box.classList.toggle("hidden");
+      if (!box.classList.contains("hidden")) {
+        renderAttrs(
+          box,
+          state.all.find((x) => x.key === key)
+        );
+      }
+    } else if (e.target.classList.contains("gallery-btn")) {
+      const box = card.querySelector(".gallery-box");
+      box.classList.toggle("hidden");
+      if (!box.classList.contains("hidden")) {
+        renderGallery(
           box,
           state.all.find((x) => x.key === key)
         );

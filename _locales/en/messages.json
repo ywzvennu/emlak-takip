@@ -131,6 +131,8 @@
 
   "featuresBtn": { "message": "Features" },
   "noFeatures": { "message": "No features listed." },
+  "attrsBtn": { "message": "All details" },
+  "galleryBtn": { "message": "Photos" },
 
   "autoSaveLabel": { "message": "Auto-save" },
   "autoSaveTip": {
