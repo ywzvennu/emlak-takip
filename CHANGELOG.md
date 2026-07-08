@@ -35,6 +35,12 @@ carry over).
 
 ### Changed
 
+- **Richer contact capture** — the individual agent's name is now captured
+  separately from the agency, and phones are structured and labelled (İş/Cep).
+  Individual-seller names (rendered via a CSS `::before` rule) are read too, and
+  sahibinden's `0850` support line is no longer mistaken for a seller number.
+  Popup + dashboard show the agent and all phones; CSV gains an `agentName`
+  column.
 - **Listing media capture** — video (HLS url + poster + upload date from the
   page's `VideoObject` JSON-LD) plus availability of İlan Klibi, HD Video, Sanal
   Tur and SahiDeko (from the media tab bar). Shown as icons on dashboard cards

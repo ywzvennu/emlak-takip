@@ -149,6 +149,12 @@ for (const [file, want] of Object.entries(CASES)) {
     );
     assert.ok(rec.photos.length >= 1, "at least one photo");
     assert.ok(rec.contact, "contact block present");
+    assert.ok(rec.contact.agentName, "agent (person) name captured");
+    assert.ok(
+      Array.isArray(rec.contact.phones) &&
+        rec.contact.phones.every((p) => p && typeof p.number === "string"),
+      "phones are structured { type, number }"
+    );
     assert.ok(rec.description, "description present");
 
     // Media availability + video details.

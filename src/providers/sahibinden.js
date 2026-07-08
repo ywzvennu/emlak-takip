@@ -95,6 +95,41 @@
     return [...out];
   }
 
+  // sahibinden's own 7/24 support line — never a seller's number.
+  const SUPPORT_PHONES = new Set(["8502224444"]);
+
+  // Seller phones with their İş/Cep label, from the .user-info-phones <dl>.
+  function labeledPhones(doc) {
+    const out = [];
+    const seen = new Set();
+    for (const g of U.qa(doc, ".user-info-phones .dl-group")) {
+      const dd = g.querySelector("dd");
+      if (!dd) continue;
+      const number = extractPhones(U.text(dd))[0];
+      if (!number || seen.has(number) || SUPPORT_PHONES.has(number)) continue;
+      seen.add(number);
+      // Match the raw label (Turkish "İş".toLowerCase() inserts a combining dot,
+      // so lowercasing then matching "is" fails).
+      const label = U.text(g.querySelector("dt")) || "";
+      const type = label.includes("Cep")
+        ? "cep"
+        : /İş|Sabit|Tel/.test(label)
+          ? "is"
+          : null;
+      out.push({ type, number });
+    }
+    return out;
+  }
+
+  // Individual sellers render their (masked) name via a CSS `::before { content }`
+  // rule inside .username-info-area — pull it out of that inline style text.
+  function cssBeforeName(doc) {
+    const area = doc.querySelector(".username-info-area");
+    if (!area) return null;
+    const m = (area.textContent || "").match(/content:\s*['"]([^'"]+)['"]/);
+    return m ? m[1].trim() : null;
+  }
+
   function validCoord(lat, lng) {
     return (
       Number.isFinite(lat) &&
@@ -239,20 +274,41 @@
       return out;
     },
 
+    // Agency (store), the individual agent/person, and their labelled phones.
+    // Agent name is distinct from the agency; individual sellers expose only a
+    // masked name (and usually no static phone — it's behind "Göster").
     contact(doc) {
-      const box = U.q(doc, SELECTORS.contactBox);
-      const name = U.text(U.q(box || doc, SELECTORS.contactName));
-      const storeLink = U.q(box || doc, SELECTORS.contactStoreLink);
+      const agency = U.text(doc.querySelector(".user-info-store-name")) || null;
+      const agentName =
+        U.text(doc.querySelector(".user-info-module h3")) ||
+        cssBeforeName(doc) ||
+        null;
+
+      const storeLink = U.q(doc, SELECTORS.contactStoreLink);
       const profileUrl = storeLink && storeLink.href ? storeLink.href : null;
-      const phones = extractPhones(box ? box.textContent : "");
-      const isStore = !!(storeLink || name);
+
+      let phones = labeledPhones(doc);
+      if (!phones.length) {
+        // Fallback: scrape the contact box, minus the support line.
+        const box = U.q(doc, SELECTORS.contactBox);
+        phones = extractPhones(box ? box.textContent : "")
+          .filter((n) => !SUPPORT_PHONES.has(n))
+          .map((number) => ({ type: null, number }));
+      }
+
+      const isStore = !!(agency || storeLink);
+      const name = agentName || agency;
       if (!name && !phones.length && !profileUrl) return null;
+      const primary =
+        (phones.find((p) => p.type === "cep") || phones[0] || {}).number ||
+        null;
       return {
-        name: name || null,
-        agency: isStore ? name : null,
-        phone: phones[0] || null,
-        phones,
         type: isStore ? "emlak_ofisi" : "sahibinden",
+        agency: agency || null,
+        agentName: agentName || null,
+        name: name || null,
+        phone: primary,
+        phones,
         profileUrl,
       };
     },
