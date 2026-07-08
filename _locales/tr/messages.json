@@ -49,13 +49,23 @@
   "statusTip": { "message": "Durum" },
   "notesPlaceholder": { "message": "Not ekle…" },
   "priceHistoryBtn": { "message": "Fiyat geçmişi" },
-  "deleteBtn": { "message": "Sil" },
   "addedOn": {
     "message": "Eklendi: $date$",
     "placeholders": { "date": { "content": "$1", "example": "6 Tem 2026" } }
   },
   "noPriceHistory": { "message": "Fiyat geçmişi yok." },
-  "confirmDelete": { "message": "Bu ilan silinsin mi?" },
+  "selectModeBtn": { "message": "Sil…" },
+  "selectAll": { "message": "Tümünü seç" },
+  "deleteSelected": { "message": "Seçilenleri sil" },
+  "cancelSelect": { "message": "İptal" },
+  "selectedCount": {
+    "message": "$count$ seçildi",
+    "placeholders": { "count": { "content": "$1", "example": "3" } }
+  },
+  "confirmDeleteMany": {
+    "message": "$count$ ilan silinsin mi?",
+    "placeholders": { "count": { "content": "$1", "example": "3" } }
+  },
   "importResult": {
     "message": "$added$ yeni ilan eklendi. Toplam: $total$.",
     "placeholders": {

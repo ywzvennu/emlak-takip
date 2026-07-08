@@ -20,6 +20,8 @@ const state = {
   filters: { category: "", type: "", status: "", tag: "", q: "" },
   sort: "savedAt-desc",
   view: "list",
+  selectMode: false,
+  selected: new Set(),
 };
 
 const nf = new Intl.NumberFormat("tr-TR");
@@ -361,6 +363,11 @@ function buildCard(tpl, r) {
     fmtDate(r.savedAt)
   );
 
+  // selection state (bulk delete)
+  const check = node.querySelector(".sel-check");
+  if (check) check.checked = state.selected.has(r.key);
+  node.classList.toggle("selected", state.selected.has(r.key));
+
   localizeDom(node); // template placeholders/titles (data-i18n-attr)
   return node;
 }
@@ -503,11 +510,15 @@ function wireGrid() {
     const card = e.target.closest(".card");
     if (!card) return;
     const key = card.dataset.key;
-    if (e.target.classList.contains("del-btn")) {
-      if (!confirm(t("confirmDelete"))) return;
-      await store.removeByKey(key);
-      await reload();
-    } else if (e.target.classList.contains("history-btn")) {
+
+    // In selection mode a click anywhere on the card toggles selection.
+    if (state.selectMode) {
+      e.preventDefault();
+      toggleSelect(key, card);
+      return;
+    }
+
+    if (e.target.classList.contains("history-btn")) {
       const box = card.querySelector(".history");
       box.classList.toggle("hidden");
       if (!box.classList.contains("hidden")) {
@@ -533,6 +544,57 @@ function wireGrid() {
         );
       }
     }
+  });
+}
+
+// ---------- bulk delete (selection mode) ----------
+
+function updateSelCount() {
+  $("#selCount").textContent = t("selectedCount", String(state.selected.size));
+  $("#deleteSelected").disabled = state.selected.size === 0;
+}
+
+function toggleSelect(key, card) {
+  if (state.selected.has(key)) state.selected.delete(key);
+  else state.selected.add(key);
+  if (card) {
+    const on = state.selected.has(key);
+    card.classList.toggle("selected", on);
+    const c = card.querySelector(".sel-check");
+    if (c) c.checked = on;
+  }
+  updateSelCount();
+}
+
+function setSelectMode(on) {
+  state.selectMode = on;
+  if (!on) state.selected.clear();
+  document.body.classList.toggle("select-mode", on);
+  $("#selectBar").classList.toggle("hidden", !on);
+  $("#selectMode").classList.toggle("active", on);
+  render();
+  updateSelCount();
+}
+
+function wireSelect() {
+  $("#selectMode").addEventListener("click", () =>
+    setSelectMode(!state.selectMode)
+  );
+  $("#cancelSelect").addEventListener("click", () => setSelectMode(false));
+  $("#selectAll").addEventListener("click", () => {
+    for (const r of sortList(applyFilters(state.all)))
+      state.selected.add(r.key);
+    render();
+    updateSelCount();
+  });
+  $("#deleteSelected").addEventListener("click", async () => {
+    const keys = [...state.selected];
+    if (!keys.length) return;
+    if (!confirm(t("confirmDeleteMany", String(keys.length)))) return;
+    for (const k of keys) await store.removeByKey(k);
+    state.selected.clear();
+    await reload();
+    setSelectMode(false);
   });
 }
 
@@ -705,6 +767,7 @@ async function boot() {
   wireIo();
   wireStorage();
   wireAutoSave();
+  wireSelect();
   wireTheme();
   wireLang();
   reload();

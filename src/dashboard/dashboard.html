@@ -40,6 +40,11 @@
           data-i18n-attr="placeholder:searchPlaceholder"
         />
         <button
+          id="selectMode"
+          class="btn ghost"
+          data-i18n="selectModeBtn"
+        ></button>
+        <button
           id="exportJson"
           class="btn ghost"
           data-i18n="exportJson"
@@ -73,6 +78,21 @@
       </div>
     </section>
 
+    <div id="selectBar" class="select-bar hidden">
+      <span id="selCount" class="sel-count"></span>
+      <button id="selectAll" class="btn tiny" data-i18n="selectAll"></button>
+      <button
+        id="deleteSelected"
+        class="btn tiny danger"
+        data-i18n="deleteSelected"
+      ></button>
+      <button
+        id="cancelSelect"
+        class="btn tiny"
+        data-i18n="cancelSelect"
+      ></button>
+    </div>
+
     <main id="grid" class="grid"></main>
     <div id="map" class="map hidden"></div>
     <div id="mapNote" class="map-note hidden" data-i18n="mapNoGeo"></div>
@@ -80,6 +100,9 @@
 
     <template id="card-tpl">
       <article class="card">
+        <label class="card-select">
+          <input type="checkbox" class="sel-check" tabindex="-1" />
+        </label>
         <a class="card-thumb" target="_blank" rel="noopener">
           <img alt="" />
           <span class="photo-count hidden"></span>
@@ -133,10 +156,6 @@
               <button
                 class="btn tiny history-btn"
                 data-i18n="priceHistoryBtn"
-              ></button>
-              <button
-                class="btn tiny danger del-btn"
-                data-i18n="deleteBtn"
               ></button>
             </div>
           </div>

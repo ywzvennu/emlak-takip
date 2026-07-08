@@ -386,6 +386,66 @@ body {
   padding: 2px 0;
 }
 
+/* --- bulk delete (selection mode) --- */
+.select-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 9;
+}
+.sel-count {
+  color: var(--muted);
+  font-size: 13px;
+  margin-right: auto;
+}
+#selectMode.active {
+  background: var(--ink);
+  color: var(--card);
+  border-color: var(--ink);
+}
+.card {
+  position: relative;
+}
+.card-select {
+  display: none;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  padding: 3px;
+  background: var(--card);
+  border-radius: 6px;
+  pointer-events: none; /* the card click toggles; avoid double events */
+}
+.sel-check {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+.select-mode .card-select {
+  display: block;
+}
+.select-mode .card {
+  cursor: pointer;
+}
+.select-mode .card-controls,
+.select-mode .notes,
+.select-mode .card-foot,
+.select-mode .history,
+.select-mode .desc,
+.select-mode .features-box {
+  display: none;
+}
+.card.selected {
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
+}
+
 /* --- map view --- */
 .view-switch {
   display: inline-flex;
