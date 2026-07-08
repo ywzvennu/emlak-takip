@@ -153,6 +153,7 @@ function rebuildFilters() {
     { value: "savedAt-asc", label: t("sortSavedAsc") },
     { value: "price-asc", label: t("sortPriceAsc") },
     { value: "price-desc", label: t("sortPriceDesc") },
+    { value: "ilanTarihiTs-desc", label: t("sortIlanDate") },
     { value: "updatedAt-desc", label: t("sortUpdated") },
   ];
   fillSelect($("#sort"), sorts, state.sort, sorts[0].label);
@@ -777,6 +778,8 @@ function toCsv(list) {
     "videoUrl",
     "agentName",
     "description",
+    "ilanTarihi",
+    "ilanTarihiIso",
     "savedAt",
     "url",
   ];
@@ -816,6 +819,8 @@ function toCsv(list) {
       r.media && r.media.video ? r.media.video.url || "" : "",
       r.contact ? r.contact.agentName || "" : "",
       r.description || "",
+      r.ilanTarihi || "",
+      r.ilanTarihiTs ? new Date(r.ilanTarihiTs).toISOString() : "",
       r.savedAt ? new Date(r.savedAt).toISOString() : "",
       r.url,
       ...attrKeys.map((k) => (r.attributes ? r.attributes[k] || "" : "")),

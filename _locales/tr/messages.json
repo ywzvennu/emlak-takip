@@ -84,6 +84,7 @@
   "sortSavedAsc": { "message": "Eklenme (eski → yeni)" },
   "sortPriceAsc": { "message": "Fiyat (artan)" },
   "sortPriceDesc": { "message": "Fiyat (azalan)" },
+  "sortIlanDate": { "message": "İlan tarihi (yeni → eski)" },
   "sortUpdated": { "message": "Son güncelleme" },
 
   "badgeDevren": { "message": "Devren" },

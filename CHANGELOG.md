@@ -35,6 +35,11 @@ carry over).
 
 ### Changed
 
+- **Typed attribute values** — alongside the raw `attributes` strings, records
+  now carry `attributesTyped` (integers like Aidat/m², floats like Kaks,
+  booleans for Var-Yok/Evet-Hayır fields) and `ilanTarihiTs` (the listing date
+  parsed from "26 Haziran 2026" to a timestamp). Adds a "listing date" sort and
+  ISO date columns to CSV.
 - **Richer contact capture** — the individual agent's name is now captured
   separately from the agency, and phones are structured and labelled (İş/Cep).
   Individual-seller names (rendered via a CSS `::before` rule) are read too, and

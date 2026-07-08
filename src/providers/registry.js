@@ -19,6 +19,7 @@
     "location",
     "geo",
     "attributes",
+    "attributesTyped",
     "features",
     "contact",
     "description",
@@ -26,12 +27,14 @@
     "thumbnail",
     "media",
     "ilanTarihi",
+    "ilanTarihiTs",
     "expired",
   ];
 
   function defaultFor(field) {
     if (field === "photos") return [];
     if (field === "attributes" || field === "features") return {};
+    if (field === "attributesTyped") return {};
     if (field === "location")
       return { il: null, ilce: null, mahalle: null, raw: null };
     if (field === "category") return "diger";
