@@ -33,6 +33,13 @@ carry over).
 - **Dev tooling** — ESLint, Prettier, `node:test` suites, GitHub Actions CI,
   issue/PR templates, `CONTRIBUTING.md`, `docs/ARCHITECTURE.md`.
 
+### Changed
+
+- **Focused on Sahibinden as the sole active provider.** The running extension
+  now matches and requests only `sahibinden.com`; the Hepsiemlak/Emlakjet
+  provider code and tests are kept in-tree to re-enable once verified. Dropped
+  the SPA URL-polling from the content script (Sahibinden is server-rendered).
+
 ### Fixed
 
 - Composite `provider:ilanNo` record key so ids can't collide across sites.

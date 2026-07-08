@@ -90,11 +90,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         }
         case "FETCH_JSON": {
           // Providers use this to read a site's own listing API. Runs in the
-          // worker (host_permissions, no page CSP). Only the three known hosts.
-          const allowed =
-            /^https:\/\/(www\.)?(sahibinden|hepsiemlak|emlakjet)\.com\//.test(
-              msg.url
-            );
+          // worker (host_permissions, no page CSP). Sahibinden only for now
+          // (the sole active provider); widen when others are re-enabled.
+          const allowed = /^https:\/\/(www\.)?sahibinden\.com\//.test(msg.url);
           if (!allowed) {
             sendResponse({ ok: false, error: "host not allowed" });
             break;

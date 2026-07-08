@@ -5,11 +5,7 @@
   "description": "__MSG_appDesc__",
   "default_locale": "tr",
   "permissions": ["storage", "activeTab", "alarms"],
-  "host_permissions": [
-    "https://www.sahibinden.com/*",
-    "https://www.hepsiemlak.com/*",
-    "https://www.emlakjet.com/*"
-  ],
+  "host_permissions": ["https://www.sahibinden.com/*"],
   "action": {
     "default_title": "__MSG_actionTitle__",
     "default_popup": "src/popup/popup.html",
@@ -25,17 +21,11 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://www.sahibinden.com/ilan/*",
-        "https://www.hepsiemlak.com/*",
-        "https://www.emlakjet.com/*"
-      ],
+      "matches": ["https://www.sahibinden.com/ilan/*"],
       "js": [
         "src/providers/registry.js",
         "src/providers/util.js",
         "src/providers/sahibinden.js",
-        "src/providers/hepsiemlak.js",
-        "src/providers/emlakjet.js",
         "src/content/capture.js",
         "src/content/inject.js"
       ],
