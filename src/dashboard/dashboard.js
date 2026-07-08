@@ -362,6 +362,19 @@ function buildCard(tpl, r) {
     photoCount.classList.remove("hidden");
   }
 
+  const media = r.media || {};
+  const mediaFlags = [];
+  if (media.hasVideo) mediaFlags.push(["🎥", t("mediaVideo")]);
+  if (media.hasIlanKlibi) mediaFlags.push(["🎬", t("mediaIlanKlibi")]);
+  if (media.hasVirtualTour) mediaFlags.push(["🧭", t("mediaVirtualTour")]);
+  if (media.hasSahiDeko) mediaFlags.push(["🛋", t("mediaSahiDeko")]);
+  if (mediaFlags.length) {
+    const mf = node.querySelector(".media-flags");
+    mf.textContent = mediaFlags.map((x) => x[0]).join(" ");
+    mf.title = mediaFlags.map((x) => x[1]).join(", ");
+    mf.classList.remove("hidden");
+  }
+
   if (r.description) node.querySelector(".desc-btn").classList.remove("hidden");
   if (r.features && Object.keys(r.features).length)
     node.querySelector(".features-btn").classList.remove("hidden");
@@ -736,6 +749,8 @@ function toCsv(list) {
     "lat",
     "lng",
     "features",
+    "hasVideo",
+    "videoUrl",
     "description",
     "savedAt",
     "url",
@@ -768,6 +783,8 @@ function toCsv(list) {
       Object.entries(r.features || {})
         .map(([g, items]) => `${g}: ${items.join("/")}`)
         .join(" | "),
+      r.media && r.media.hasVideo ? "1" : "",
+      r.media && r.media.video ? r.media.video.url || "" : "",
       r.description || "",
       r.savedAt ? new Date(r.savedAt).toISOString() : "",
       r.url,

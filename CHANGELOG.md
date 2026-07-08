@@ -35,6 +35,10 @@ carry over).
 
 ### Changed
 
+- **Listing media capture** — video (HLS url + poster + upload date from the
+  page's `VideoObject` JSON-LD) plus availability of İlan Klibi, HD Video, Sanal
+  Tur and SahiDeko (from the media tab bar). Shown as icons on dashboard cards
+  and exported to CSV.
 - **Removed/expired listing detection** — revisiting a saved listing that
   sahibinden no longer publishes marks it (a dedicated `removed` flag, separate
   from the user's workflow status) and shows a red "Yayından kaldırıldı" badge +

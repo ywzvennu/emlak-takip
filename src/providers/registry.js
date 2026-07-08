@@ -24,6 +24,7 @@
     "description",
     "photos",
     "thumbnail",
+    "media",
     "ilanTarihi",
     "expired",
   ];

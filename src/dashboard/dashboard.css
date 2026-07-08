@@ -383,6 +383,18 @@ body {
   background: rgba(0, 0, 0, 0.62);
   color: #fff;
 }
+
+/* media availability icons (video / clip / tour), top-left of the thumbnail */
+.media-flags {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  font-size: 12px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.62);
+  letter-spacing: 1px;
+}
 .card-loc {
   display: flex;
   gap: 8px;
