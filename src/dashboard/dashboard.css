@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: light;
-  --yellow: #ffe800;
+  --brand: #1f9d55;
   --ink: #1a1a1a;
   --muted: #6b6b6b;
   --line: #e6e6e6;
@@ -16,15 +16,15 @@
   --surface-2: #f0f0f0;
   --panel: #fafafa;
   --thumb: #ececec;
-  --badge-bg: #fff6b0;
-  --badge-line: #f0e08a;
+  --badge-bg: #dcf3e5;
+  --badge-line: #b6e0c4;
   --danger-line: #f3c6c6;
   --danger-bg: #fdecec;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --yellow: #ffe800;
+  --brand: #2fbf72;
   --ink: #e8e8e8;
   --muted: #9aa0a6;
   --line: #363a3f;
@@ -36,8 +36,8 @@
   --surface-2: #2c3036;
   --panel: #24272c;
   --thumb: #2a2d31;
-  --badge-bg: #3a3410;
-  --badge-line: #5c5410;
+  --badge-bg: #123322;
+  --badge-line: #1f5136;
   --danger-line: #5c2a2a;
   --danger-bg: #3a2020;
 }
@@ -78,13 +78,9 @@ body {
   margin: 0;
 }
 .logo {
-  display: grid;
-  place-items: center;
   width: 26px;
   height: 26px;
-  background: var(--yellow);
-  border-radius: 7px;
-  font-weight: 800;
+  background: url("../icons/icon48.png") center/contain no-repeat;
 }
 .count {
   color: var(--muted);
@@ -485,7 +481,7 @@ body {
   height: 14px;
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
-  background: var(--yellow);
+  background: var(--brand);
   border: 2px solid var(--ink);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }

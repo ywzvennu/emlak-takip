@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the extension's raster icons (a rounded yellow tile with a house).
+"""Generate the extension's raster icons (a rounded green tile with a house).
 
 No external assets — draws with Pillow. Re-run after tweaking colors/shape:
     python3 scripts/generate_icons.py
@@ -7,8 +7,8 @@ No external assets — draws with Pillow. Re-run after tweaking colors/shape:
 import os
 from PIL import Image, ImageDraw
 
-YELLOW = (255, 232, 0, 255)
-INK = (26, 26, 26, 255)
+GREEN = (31, 157, 85, 255)  # brand green (#1f9d55)
+WHITE = (255, 255, 255, 255)
 OUT = os.path.join(os.path.dirname(__file__), "..", "src", "icons")
 
 
@@ -24,24 +24,24 @@ def draw_icon(size):
     s = size * 4
     img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    d.rounded_rectangle([0, 0, s - 1, s - 1], radius=int(s * 0.22), fill=YELLOW)
+    d.rounded_rectangle([0, 0, s - 1, s - 1], radius=int(s * 0.22), fill=GREEN)
 
-    # simple house: roof triangle + body
+    # simple white house: roof triangle + body
     cx = s / 2
     roof_top = s * 0.24
     roof_bottom = s * 0.48
     half_w = s * 0.26
     d.polygon(
         [(cx, roof_top), (cx - half_w, roof_bottom), (cx + half_w, roof_bottom)],
-        fill=INK,
+        fill=WHITE,
     )
     body_w = s * 0.36
     body = [cx - body_w / 2, roof_bottom, cx + body_w / 2, s * 0.74]
-    d.rectangle(body, fill=INK)
-    # door (punch out with yellow)
+    d.rectangle(body, fill=WHITE)
+    # door (punch back to the green tile)
     door_w = s * 0.10
     d.rectangle(
-        [cx - door_w / 2, s * 0.58, cx + door_w / 2, s * 0.74], fill=YELLOW
+        [cx - door_w / 2, s * 0.58, cx + door_w / 2, s * 0.74], fill=GREEN
     )
 
     img = img.resize((size, size), Image.LANCZOS)

@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: light;
-  --yellow: #ffe800;
+  --brand: #1f9d55;
   --ink: #1a1a1a;
   --muted: #6b6b6b;
   --line: #e6e6e6;
@@ -12,13 +12,13 @@
   --bg: #fff;
   --surface: #fff;
   --thumb: #f2f2f2;
-  --badge-bg: #fff6b0;
-  --badge-line: #f0e08a;
+  --badge-bg: #dcf3e5;
+  --badge-line: #b6e0c4;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --yellow: #ffe800;
+  --brand: #2fbf72;
   --ink: #e8e8e8;
   --muted: #9aa0a6;
   --line: #363a3f;
@@ -26,8 +26,8 @@
   --bg: #17191c;
   --surface: #22252a;
   --thumb: #2a2d31;
-  --badge-bg: #3a3410;
-  --badge-line: #5c5410;
+  --badge-bg: #123322;
+  --badge-line: #1f5136;
 }
 
 body {
@@ -60,14 +60,9 @@ body {
 }
 
 .logo {
-  display: grid;
-  place-items: center;
   width: 22px;
   height: 22px;
-  background: var(--yellow);
-  border-radius: 6px;
-  font-weight: 800;
-  font-size: 13px;
+  background: url("../icons/icon48.png") center/contain no-repeat;
 }
 
 .count {
@@ -163,9 +158,9 @@ body {
 }
 
 .btn.primary {
-  background: var(--yellow);
-  border-color: #d9c500;
-  color: var(--ink);
+  background: var(--brand);
+  border-color: #178a4a;
+  color: #fff;
 }
 .btn.primary.saved {
   background: var(--green);
