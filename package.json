@@ -10,7 +10,8 @@
     "format:check": "prettier --check .",
     "test": "node --test",
     "package": "node scripts/package.mjs",
-    "version:set": "node scripts/set-version.mjs"
+    "version:set": "node scripts/set-version.mjs",
+    "verify:live": "node scripts/verify-live.mjs"
   },
   "license": "MIT",
   "devDependencies": {

@@ -64,6 +64,17 @@ Pushing a `v*` tag (e.g. `git tag v0.2.0 && git push origin v0.2.0`) triggers
 `.github/workflows/release.yml`, which builds the zip and attaches it to a
 GitHub Release.
 
+## Live verification
+
+`npm run verify:live` drives the **real provider code** against live listings
+across each provider × category/type, and prints a **PII-free** presence report
+(booleans/counts — no titles, locations, names or coordinates). It uses `curl`
+(the sites' bot protection 403s Node's fetch) and throttles requests. Nothing is
+saved to disk. Use it to confirm capture after changing a provider.
+
+Note: sahibinden is often bot-gated from non-browser clients, so it may not
+resolve a listing from a script.
+
 ## Adding a listing site
 
 Site adapters are being moved behind a provider registry (see the open
