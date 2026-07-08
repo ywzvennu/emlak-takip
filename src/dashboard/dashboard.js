@@ -57,16 +57,40 @@ function escapeHtml(s) {
   );
 }
 
+// Normalize a phone entry (legacy string, or { type, number }).
+function phoneEntry(p) {
+  return typeof p === "string" ? { type: null, number: p } : p || {};
+}
+
+function phoneLabel(type) {
+  return type === "cep" ? "Cep" : type === "is" ? "İş" : "";
+}
+
 function contactLine(c) {
   if (!c) return "";
   const parts = [];
+  const who = [
+    c.agentName,
+    c.agency && c.agency !== c.agentName ? c.agency : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   const label =
-    c.agency || c.name || (c.type === "sahibinden" ? t("sellerOwner") : "");
+    who || c.name || (c.type === "sahibinden" ? t("sellerOwner") : "");
   if (label) parts.push(`<span class="c-name">${escapeHtml(label)}</span>`);
-  if (c.phone)
+
+  const phones = (c.phones || []).map(phoneEntry).filter((p) => p.number);
+  const entries = phones.length
+    ? phones
+    : c.phone
+      ? [{ type: null, number: c.phone }]
+      : [];
+  for (const p of entries) {
+    const lbl = phoneLabel(p.type);
     parts.push(
-      `<a class="c-phone" href="tel:+90${c.phone}">${fmtPhone(c.phone)}</a>`
+      `<a class="c-phone" href="tel:+90${p.number}">${lbl ? escapeHtml(lbl) + " " : ""}${fmtPhone(p.number)}</a>`
     );
+  }
   return parts.join(" · ");
 }
 
@@ -751,6 +775,7 @@ function toCsv(list) {
     "features",
     "hasVideo",
     "videoUrl",
+    "agentName",
     "description",
     "savedAt",
     "url",
@@ -777,7 +802,11 @@ function toCsv(list) {
       (r.tags || []).join("|"),
       r.notes,
       r.contact ? r.contact.agency || r.contact.name || "" : "",
-      r.contact ? (r.contact.phones || []).join("|") : "",
+      r.contact
+        ? (r.contact.phones || [])
+            .map((p) => (typeof p === "string" ? p : p.number))
+            .join("|")
+        : "",
       r.geo ? r.geo.lat : "",
       r.geo ? r.geo.lng : "",
       Object.entries(r.features || {})
@@ -785,6 +814,7 @@ function toCsv(list) {
         .join(" | "),
       r.media && r.media.hasVideo ? "1" : "",
       r.media && r.media.video ? r.media.video.url || "" : "",
+      r.contact ? r.contact.agentName || "" : "",
       r.description || "",
       r.savedAt ? new Date(r.savedAt).toISOString() : "",
       r.url,

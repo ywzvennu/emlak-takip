@@ -107,6 +107,43 @@ test("sahibinden: media() reads video JSON-LD + tab availability", () => {
   assert.equal(m.video.uploadDate, "2026-06-14T22:48:20+03:00");
 });
 
+test("sahibinden: contact separates agent from agency + labelled phones", () => {
+  const P = R.getProvider(SAHIBINDEN_URL);
+  const html =
+    '<div class="user-info-module">' +
+    '<div class="user-info-store-name">REMAX ÖRNEK</div>' +
+    "<h3>Ayşe Yılmaz</h3>" +
+    '<div class="user-info-phones"><dl>' +
+    '<div class="dl-group"><dt>İş</dt><dd>0 (212) 111 22 33</dd></div>' +
+    '<div class="dl-group"><dt>Cep</dt><dd>0 (532) 444 55 66</dd></div>' +
+    "</dl></div></div>";
+  const doc = new JSDOM(html, { url: SAHIBINDEN_URL }).window.document;
+  const c = P.contact(doc);
+  assert.equal(c.type, "emlak_ofisi");
+  assert.equal(c.agency, "REMAX ÖRNEK");
+  assert.equal(c.agentName, "Ayşe Yılmaz");
+  assert.deepEqual(c.phones, [
+    { type: "is", number: "2121112233" },
+    { type: "cep", number: "5324445566" },
+  ]);
+  assert.equal(c.phone, "5324445566"); // primary prefers the mobile (Cep)
+});
+
+test("sahibinden: individual name from CSS ::before; support line excluded", () => {
+  const P = R.getProvider(SAHIBINDEN_URL);
+  const html =
+    '<div class="classifiedUserBox"><div class="username-info-area">' +
+    "<style>.cssX:before {content: 'Ali V.';}</style></div>" +
+    '<ul class="classifiedInfoList"><li><strong>7/24 Müşteri Hizmetleri</strong>' +
+    "<span>0 850 222 44 44</span></li></ul></div>";
+  const doc = new JSDOM(html, { url: SAHIBINDEN_URL }).window.document;
+  const c = P.contact(doc);
+  assert.equal(c.type, "sahibinden");
+  assert.equal(c.agentName, "Ali V.");
+  assert.equal(c.agency, null);
+  assert.equal(c.phones.length, 0); // 0850 support number is not captured
+});
+
 test("sahibinden: expired() flags a removed page, never a live one", () => {
   const P = R.getProvider(SAHIBINDEN_URL);
   const removed = new JSDOM(

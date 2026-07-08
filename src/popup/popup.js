@@ -57,10 +57,29 @@ function render(payload, saved) {
 
   const c = payload.contact;
   if (c) {
+    const who = [
+      c.agentName,
+      c.agency && c.agency !== c.agentName ? c.agency : null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
     const label =
-      c.agency || c.name || (c.type === "sahibinden" ? t("sellerOwner") : "");
-    const phone = c.phone ? fmtPhone(c.phone) : "";
-    $("contact").textContent = [label, phone].filter(Boolean).join(" · ");
+      who || c.name || (c.type === "sahibinden" ? t("sellerOwner") : "");
+    const phones = (c.phones || [])
+      .map((p) => (typeof p === "string" ? { type: null, number: p } : p))
+      .filter((p) => p && p.number);
+    const entries = phones.length
+      ? phones
+      : c.phone
+        ? [{ type: null, number: c.phone }]
+        : [];
+    const phoneStr = entries
+      .map((p) => {
+        const lbl = p.type === "cep" ? "Cep " : p.type === "is" ? "İş " : "";
+        return `${lbl}${fmtPhone(p.number)}`;
+      })
+      .join(" · ");
+    $("contact").textContent = [label, phoneStr].filter(Boolean).join(" · ");
   } else {
     $("contact").textContent = "";
   }
