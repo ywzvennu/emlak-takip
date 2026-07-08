@@ -84,6 +84,7 @@
   "sortSavedAsc": { "message": "Added (old → new)" },
   "sortPriceAsc": { "message": "Price (ascending)" },
   "sortPriceDesc": { "message": "Price (descending)" },
+  "sortIlanDate": { "message": "Listing date (new → old)" },
   "sortUpdated": { "message": "Last updated" },
 
   "badgeDevren": { "message": "Transfer" },

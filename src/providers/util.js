@@ -85,6 +85,103 @@
     return { category, listingType };
   }
 
+  // ---- typed attribute coercion ----
+  // Values from listing tables arrive as Turkish-formatted strings; these turn
+  // the ones with an unambiguous type into numbers / booleans / timestamps.
+  const TR_MONTHS = {
+    ocak: 1,
+    şubat: 2,
+    subat: 2,
+    mart: 3,
+    nisan: 4,
+    mayıs: 5,
+    mayis: 5,
+    haziran: 6,
+    temmuz: 7,
+    ağustos: 8,
+    agustos: 8,
+    eylül: 9,
+    eylul: 9,
+    ekim: 10,
+    kasım: 11,
+    kasim: 11,
+    aralık: 12,
+    aralik: 12,
+  };
+
+  // Turkish date -> epoch ms (UTC midnight). Handles "26 Haziran 2026" and
+  // "26.06.2026"; returns null when unparseable.
+  function parseTrDate(str) {
+    if (str == null) return null;
+    const s = String(str).trim();
+    let m = s.match(/^(\d{1,2})\s+([^\s\d]+)\s+(\d{4})$/);
+    if (m) {
+      const mon = TR_MONTHS[m[2].toLowerCase()];
+      if (mon) return Date.UTC(Number(m[3]), mon - 1, Number(m[1]));
+    }
+    m = s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/);
+    if (m) return Date.UTC(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+    return null;
+  }
+
+  const UNSPECIFIED = /belirtilmemi/i; // "Belirtilmemiş"
+
+  // Turkish-grouped integer: dots are thousands separators ("13.000" -> 13000).
+  function trInt(str) {
+    if (str == null || UNSPECIFIED.test(str) || !/\d/.test(String(str)))
+      return null;
+    const digits = String(str).replace(/[^\d]/g, "");
+    return digits ? parseInt(digits, 10) : null;
+  }
+
+  // Decimal where the dot (or comma) is the decimal point ("0.75" -> 0.75).
+  function trFloat(str) {
+    if (str == null || UNSPECIFIED.test(str)) return null;
+    const s = String(str).replace(/\s/g, "").replace(",", ".");
+    if (!/\d/.test(s)) return null;
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  // Yes/No-style values -> boolean; anything else -> null (stays a string).
+  function trBool(str) {
+    const s = String(str == null ? "" : str)
+      .trim()
+      .toLowerCase();
+    if (s === "evet" || s === "var") return true;
+    if (s === "hayır" || s === "hayir" || s === "yok") return false;
+    return null;
+  }
+
+  const INT_ATTR_KEYS = new Set([
+    "m²",
+    "m² (Brüt)",
+    "m² (Net)",
+    "m² Fiyatı",
+    "Aidat (TL)",
+    "Depozito (TL)",
+    "Banyo Sayısı",
+    "Kat Sayısı",
+  ]);
+  const FLOAT_ATTR_KEYS = new Set(["Kaks (Emsal)", "Gabari"]);
+  const DATE_ATTR_KEYS = new Set(["İlan Tarihi"]);
+
+  // The typed subset of an attribute map: integers/floats/dates by key, booleans
+  // by value vocabulary. Keys that don't type cleanly are omitted — their raw
+  // string stays available in the untouched `attributes`.
+  function typeAttributes(attrs) {
+    const out = {};
+    for (const [k, v] of Object.entries(attrs || {})) {
+      let typed;
+      if (INT_ATTR_KEYS.has(k)) typed = trInt(v);
+      else if (FLOAT_ATTR_KEYS.has(k)) typed = trFloat(v);
+      else if (DATE_ATTR_KEYS.has(k)) typed = parseTrDate(v);
+      else typed = trBool(v);
+      if (typed != null) out[k] = typed;
+    }
+    return out;
+  }
+
   // ---- JSON-LD ----
   function jsonld(doc) {
     const out = [];
@@ -387,6 +484,8 @@
     parsePriceText,
     currency,
     classifyTr,
+    parseTrDate,
+    typeAttributes,
     jsonld,
     findType,
     listing,

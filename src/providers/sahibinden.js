@@ -397,6 +397,15 @@
     ilanTarihi(doc, url) {
       return this.attributes(doc, url)["İlan Tarihi"] || null;
     },
+    // Epoch-ms of the listing date, for sorting/filtering.
+    ilanTarihiTs(doc, url) {
+      return U.parseTrDate(this.ilanTarihi(doc, url));
+    },
+    // Typed subset of the attribute table (numbers/booleans/dates); the raw
+    // strings stay in `attributes` for display.
+    attributesTyped(doc) {
+      return U.typeAttributes(this.attributes(doc));
+    },
     // Removed/expired listing detection (best-effort). Only flags a page as
     // removed when the normal live-listing markers are absent AND a removal
     // notice is present — so a slow/partial render of a live page is never

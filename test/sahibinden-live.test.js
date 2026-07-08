@@ -147,6 +147,18 @@ for (const [file, want] of Object.entries(CASES)) {
       Object.keys(rec.attributes).length >= 5,
       "attribute list populated"
     );
+    // Typed layer: İlan Tarihi -> timestamp, and every typed attr is a
+    // number/boolean (never a leftover string).
+    assert.ok(
+      Number.isFinite(rec.ilanTarihiTs),
+      "ilanTarihiTs parsed to a timestamp"
+    );
+    for (const [k, v] of Object.entries(rec.attributesTyped)) {
+      assert.ok(
+        typeof v === "number" || typeof v === "boolean",
+        `attributesTyped[${k}] is number/boolean`
+      );
+    }
     assert.ok(rec.photos.length >= 1, "at least one photo");
     assert.ok(rec.contact, "contact block present");
     assert.ok(rec.contact.agentName, "agent (person) name captured");
