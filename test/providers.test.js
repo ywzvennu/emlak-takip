@@ -25,6 +25,14 @@ await import("../src/providers/hepsiemlak.js");
 await import("../src/providers/emlakjet.js");
 await import("../src/content/capture.js");
 const R = globalThis.EmlakTakip;
+const U = globalThis.EmlakTakipUtil;
+
+// Offline: the hepsiemlak provider reads its /api/realties endpoint. Feed a
+// synthetic response instead of hitting the network, so the API-mapping is
+// verified without touching the live site.
+const HEPSI_API = JSON.parse(fixtureHtml("hepsiemlak-api.json"));
+U.fetchJson = async (url) =>
+  /hepsiemlak\.com\/api\/realties\//.test(url) ? HEPSI_API : null;
 
 // Assemble a record the way the content script does. buildRecord is async
 // (a provider may pull from an embedded-state source before the field methods).
@@ -61,7 +69,7 @@ test("sahibinden: full record incl. features (Özellikler)", async () => {
   assert.ok(rec.raw && rec.raw.meta); // meta/JSON-LD kept as raw
 });
 
-test("hepsiemlak: everything from the embedded state JSON (no network)", async () => {
+test("hepsiemlak: maps its /api/realties response (offline)", async () => {
   const { rec } = await build(HEPSI_URL, "hepsiemlak-ilan.html");
   assert.equal(rec.provider, "hepsiemlak");
   assert.equal(rec.ilanNo, "123456");

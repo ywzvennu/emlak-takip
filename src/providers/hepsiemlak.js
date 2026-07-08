@@ -101,22 +101,12 @@
     name: "Hepsiemlak",
     matches: (url) => HOST.test(url) && U.hasId(url),
 
-    // Data sources tried in order. The page embeds the full realtyDetail JSON
-    // in an inline <script>, so we read that from the DOM first (no network);
-    // only if it's absent do we fall back to the same-origin listing API. The
-    // URL id may be "169799-41" (the API needs that full id); the record key
-    // uses the stable base number.
+    // The page is client-rendered from its own same-origin API
+    // (/api/realties/<id>) — the listing data is NOT embedded in the served
+    // HTML — so we read that API (via the background worker). The URL id may be
+    // "169799-41" (the API needs that full id); the record key uses the stable
+    // base number.
     sources: [
-      (doc) => {
-        const r =
-          doc &&
-          U.embeddedJson(
-            doc,
-            "realtyDetail",
-            (o) => o && (o.listingId || o.realtyId || o.title)
-          );
-        return r ? { realtyDetail: r, source: "embedded" } : null;
-      },
       (doc, url) => {
         const seg = U.lastSegment(url);
         const id = /^\d+-\d+$/.test(seg) ? seg : U.urlId(url);
