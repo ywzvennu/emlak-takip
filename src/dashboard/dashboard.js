@@ -182,6 +182,7 @@ function sortList(list) {
 
 let map = null;
 let markerLayer = null;
+let markerByKey = new Map(); // record key -> its map marker, for list↔map jumps
 
 function pinIcon() {
   return L.divIcon({
@@ -219,6 +220,7 @@ function mapPopupHtml(r) {
     `<div class="mp-price">${escapeHtml(fmtPrice(r.price, "—"))}</div>` +
     (cat ? `<div class="mp-cat">${escapeHtml(cat)}</div>` : "") +
     (loc ? `<div class="mp-loc">${escapeHtml(loc)}</div>` : "") +
+    `<button class="mp-tolist" data-key="${escapeHtml(r.key)}">${t("toListBtn")}</button>` +
     `</div>`
   );
 }
@@ -226,11 +228,14 @@ function mapPopupHtml(r) {
 function renderMap(rows) {
   ensureMap();
   markerLayer.clearLayers();
+  markerByKey = new Map();
   const located = rows.filter((r) => point(r));
   for (const r of located) {
-    L.marker(point(r), { icon: pinIcon() })
-      .bindPopup(mapPopupHtml(r))
-      .addTo(markerLayer);
+    const marker = L.marker(point(r), { icon: pinIcon() }).bindPopup(
+      mapPopupHtml(r)
+    );
+    marker.addTo(markerLayer);
+    markerByKey.set(r.key, marker);
   }
   const b = boundsOf(located);
   if (b) map.fitBounds(b, { padding: [30, 30], maxZoom: 15 });
@@ -248,6 +253,28 @@ function setView(view) {
   $("#viewMap").classList.toggle("active", isMap);
   if (!isMap) $("#mapNote").classList.add("hidden");
   render();
+}
+
+// Jump from a list card to its pin on the map (switches to the map view).
+function focusOnMap(key) {
+  setView("map"); // rebuilds markers synchronously
+  const marker = markerByKey.get(key);
+  if (!marker) return;
+  const zoom = Math.max(map.getZoom() || 0, 15);
+  map.setView(marker.getLatLng(), zoom);
+  marker.openPopup();
+  // container was just unhidden — make sure Leaflet has the right size
+  setTimeout(() => map.invalidateSize(), 0);
+}
+
+// Jump from a map pin back to its card in the list (switches to the list view).
+function focusInList(key) {
+  setView("list");
+  const card = $(`#grid .card[data-key="${key}"]`);
+  if (!card) return;
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+  card.classList.add("flash");
+  setTimeout(() => card.classList.remove("flash"), 1500);
 }
 
 // ---------- rendering ----------
@@ -309,6 +336,7 @@ function buildCard(tpl, r) {
   if (pt) {
     mapLink.href = osmUrl(pt[0], pt[1]);
     mapLink.classList.remove("hidden");
+    node.querySelector(".locate-btn").classList.remove("hidden");
   }
   node.querySelector(".card-specs").textContent = specLine(
     r.attributes,
@@ -494,6 +522,15 @@ function wireFilters() {
   $("#viewMap").addEventListener("click", () => setView("map"));
 }
 
+// The map popup's "show in list" button (Leaflet renders popup HTML into #map,
+// so delegate from the container).
+function wireMap() {
+  $("#map").addEventListener("click", (e) => {
+    const btn = e.target.closest(".mp-tolist");
+    if (btn) focusInList(btn.dataset.key);
+  });
+}
+
 function wireGrid() {
   const grid = $("#grid");
 
@@ -545,7 +582,9 @@ function wireGrid() {
       return;
     }
 
-    if (e.target.classList.contains("history-btn")) {
+    if (e.target.classList.contains("locate-btn")) {
+      focusOnMap(key);
+    } else if (e.target.classList.contains("history-btn")) {
       const box = card.querySelector(".history");
       box.classList.toggle("hidden");
       if (!box.classList.contains("hidden")) {
@@ -811,6 +850,7 @@ async function boot() {
   localizeDom(); // static topbar / filters / empty state
   wireFilters();
   wireGrid();
+  wireMap();
   wireIo();
   wireStorage();
   wireAutoSave();

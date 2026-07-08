@@ -101,6 +101,8 @@
   "statusElendi": { "message": "Elendi" },
 
   "mapLink": { "message": "Harita" },
+  "locateBtn": { "message": "Haritada göster" },
+  "toListBtn": { "message": "Listede göster" },
   "descBtn": { "message": "Açıklama" },
   "noDescription": { "message": "Açıklama yok." },
   "sellerOwner": { "message": "Sahibinden" },
