@@ -8,7 +8,11 @@
 
   const CATEGORIES = { konut: "konut", ticari: "ticari", arsa: "arsa" };
   const TYPES = { satilik: "satilik", kiralik: "kiralik" };
-  const DETAIL_RE = /\/ilan\/[a-z0-9-]+-\d+\/detay/i;
+  // Slugs may contain "." (e.g. "14.kat", "2.240-m2"), so the char class must
+  // allow it — otherwise those listings fail matches() and never get captured.
+  const DETAIL_RE = /\/ilan\/[a-z0-9.-]+-\d+\/detay/i;
+  // Commercial listings use the "is-yeri" slug token, not "ticari".
+  const IS_YERI_RE = /(?:^|-)is-yeri(?:-|$)/;
 
   const SELECTORS = {
     title: [".classifiedDetailTitle h1", "h1.classifiedDetailTitle", "h1"],
@@ -72,7 +76,7 @@
   const PHONE_RE =
     /(?:\+?90[\s-]?)?(?:0[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}/g;
 
-  const slugMatch = (url) => url.match(/\/ilan\/([a-z0-9-]+?)-(\d+)\/detay/i);
+  const slugMatch = (url) => url.match(/\/ilan\/([a-z0-9.-]+?)-(\d+)\/detay/i);
 
   function extractPhones(str) {
     if (!str) return [];
@@ -120,9 +124,11 @@
 
     category(doc, url) {
       const m = slugMatch(url);
-      if (m)
+      if (m) {
+        if (IS_YERI_RE.test(m[1])) return "ticari";
         for (const p of m[1].split("-"))
           if (CATEGORIES[p]) return CATEGORIES[p];
+      }
       return "diger";
     },
 
