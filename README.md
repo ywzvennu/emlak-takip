@@ -37,8 +37,11 @@ stays local in your own browser.
   the full description, gallery photos and every attribute row.
 - **Local-first, optional sync**: data lives in `chrome.storage.local` by
   default; a dashboard toggle switches to `chrome.storage.sync` for cross-device
-  sync (falling back gracefully, without data loss, if the collection exceeds
-  sync's size limit). All storage goes through `src/lib/store.js`.
+  sync. Sync is **sharded** (one item per listing + an index) so larger
+  collections aren't limited by sync's per-item blob size, and the heavy raw
+  capture payload is kept local-only to fit. Switching falls back gracefully,
+  without data loss, if it still doesn't fit. All storage goes through
+  `src/lib/store.js`.
 
 ## Install (unpacked)
 
@@ -118,4 +121,3 @@ provider interface and the normalized record schema.
 ## Roadmap
 
 - More provider adapters (currently: Sahibinden, Hepsiemlak, Emlakjet).
-- Sharded sync storage to support larger collections beyond the per-item limit.

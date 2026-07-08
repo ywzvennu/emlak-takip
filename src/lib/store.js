@@ -109,6 +109,59 @@ export async function setAutoSave(on) {
   return !!on;
 }
 
+// Sync storage is sharded: one item per record (keyed SHARD+key) plus an index
+// of keys, so a large collection isn't limited by sync's per-item (~8KB) blob
+// size. Local keeps the simple single-item array. The sync copy also drops the
+// heavy `raw` payload (kept only in local) so individual records fit sync.
+const SHARD = "ilan:";
+const INDEX = "ilan_index";
+
+function slimForSync(rec) {
+  const copy = { ...rec };
+  delete copy.raw;
+  return copy;
+}
+
+async function readArea(area) {
+  const api = areaFor(area);
+  if (area !== "sync") return normalizeList((await api.get(KEY))[KEY]);
+  const idx = (await api.get(INDEX))[INDEX];
+  if (!Array.isArray(idx)) {
+    // legacy single-item copy in sync (pre-sharding)
+    return normalizeList((await api.get(KEY))[KEY]);
+  }
+  const itemKeys = idx.map((k) => SHARD + k);
+  const items = itemKeys.length ? await api.get(itemKeys) : {};
+  return normalizeList(idx.map((k) => items[SHARD + k]).filter(Boolean));
+}
+
+async function writeArea(area, list) {
+  const api = areaFor(area);
+  const norm = normalizeList(list);
+  if (area !== "sync") {
+    await api.set({ [KEY]: norm });
+    return;
+  }
+  const keys = norm.map((r) => r.key);
+  const prevIdx = (await api.get(INDEX))[INDEX] || [];
+  const setObj = { [INDEX]: keys };
+  for (const r of norm) setObj[SHARD + r.key] = slimForSync(r);
+  await api.set(setObj);
+  const stale = prevIdx.filter((k) => !keys.includes(k)).map((k) => SHARD + k);
+  if (api.remove) await api.remove([KEY, ...stale]); // + drop legacy single item
+}
+
+async function clearArea(area) {
+  const api = areaFor(area);
+  if (!api.remove) return;
+  if (area !== "sync") {
+    await api.remove(KEY);
+    return;
+  }
+  const idx = (await api.get(INDEX))[INDEX] || [];
+  await api.remove([KEY, INDEX, ...idx.map((k) => SHARD + k)]);
+}
+
 // Switch where listings are stored, moving existing data across. If the target
 // is sync and the data doesn't fit (sync's per-item/total quota), the move is
 // aborted, the area is left unchanged, and nothing is lost.
@@ -117,30 +170,23 @@ export async function setStorageArea(area) {
   const current = await getArea();
   if (target === current) return { area: current, moved: 0 };
 
-  const fromApi = areaFor(current);
-  const toApi = areaFor(target);
-  const data = await fromApi.get(KEY);
-  const list = normalizeList(data[KEY]);
-
+  const list = await readArea(current);
   try {
-    await toApi.set({ [KEY]: list });
+    await writeArea(target, list);
   } catch (e) {
     return { area: current, moved: 0, error: String((e && e.message) || e) };
   }
   await patchSettings({ area: target });
-  if (fromApi.remove) await fromApi.remove(KEY);
+  await clearArea(current);
   return { area: target, moved: list.length };
 }
 
 async function read() {
-  const api = areaFor(await getArea());
-  const data = await api.get(KEY);
-  return normalizeList(data[KEY]);
+  return readArea(await getArea());
 }
 
 async function write(list) {
-  const api = areaFor(await getArea());
-  await api.set({ [KEY]: list });
+  await writeArea(await getArea(), list);
 }
 
 export async function getAll() {

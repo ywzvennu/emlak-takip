@@ -166,23 +166,45 @@ test("storage area defaults to local", async () => {
   assert.equal(await store.getStorageArea(), "local");
 });
 
-test("setStorageArea moves data to sync and reads follow the area", async () => {
+test("setStorageArea moves data to sync (sharded) and reads follow the area", async () => {
   const { localBacking, syncBacking } = installChromeMock();
-  await store.upsert(payload());
+  await store.upsert(payload({ raw: { big: "payload" } }));
 
   const res = await store.setStorageArea("sync");
   assert.equal(res.area, "sync");
   assert.equal(res.moved, 1);
   assert.equal(await store.getStorageArea(), "sync");
 
-  // data now lives in sync, and is gone from local
-  assert.ok(syncBacking.ilanlar);
+  // sync is sharded: an index + one item per record; local copy is gone
+  assert.deepEqual(syncBacking["ilan_index"], ["sahibinden:12345"]);
+  assert.ok(syncBacking["ilan:sahibinden:12345"]);
+  assert.equal(syncBacking["ilan:sahibinden:12345"].raw, undefined); // raw dropped
   assert.equal(localBacking.ilanlar, undefined);
   assert.equal((await store.getAll()).length, 1);
 
-  // and a subsequent write goes to sync
+  // a subsequent write goes to the sync shard
   await store.updateByKey("sahibinden:12345", { status: "elendi" });
-  assert.equal(syncBacking.ilanlar[0].status, "elendi");
+  assert.equal(syncBacking["ilan:sahibinden:12345"].status, "elendi");
+});
+
+test("sharded sync fits records a single blob would exceed", async () => {
+  installChromeMock({ syncItemLimit: 2000 }); // per-item cap
+  await store.setStorageArea("sync");
+  for (let i = 0; i < 5; i++) {
+    await store.upsert(payload({ ilanNo: String(i), key: undefined }));
+  }
+  const all = await store.getAll();
+  assert.equal(all.length, 5); // combined > 2000B, but each shard fits
+});
+
+test("removing a record drops its sync shard", async () => {
+  const { syncBacking } = installChromeMock();
+  await store.setStorageArea("sync");
+  await store.upsert(payload());
+  assert.ok(syncBacking["ilan:sahibinden:12345"]);
+  await store.removeByKey("sahibinden:12345");
+  assert.equal(syncBacking["ilan:sahibinden:12345"], undefined);
+  assert.deepEqual(syncBacking["ilan_index"], []);
 });
 
 test("setStorageArea falls back to local when data exceeds the sync quota", async () => {
