@@ -25,6 +25,7 @@ const state = {
     tag: "",
     q: "",
     devren: false,
+    removed: false,
   },
   sort: "savedAt-desc",
   view: "list",
@@ -137,12 +138,13 @@ function rebuildFilters() {
 // ---------- filtering / sorting ----------
 
 function applyFilters(list) {
-  const { category, type, status, tag, q, devren } = state.filters;
+  const { category, type, status, tag, q, devren, removed } = state.filters;
   const needle = q.trim().toLowerCase();
   return list.filter((r) => {
     if (category && r.category !== category) return false;
     if (type && r.listingType !== type) return false;
     if (devren && !r.devren) return false;
+    if (removed && !r.removed) return false;
     if (status && r.status !== status) return false;
     if (tag && !(r.tags || []).includes(tag)) return false;
     if (needle) {
@@ -152,6 +154,7 @@ function applyFilters(list) {
         r.notes,
         (r.tags || []).join(" "),
         r.devren ? "devren" : "",
+        r.removed ? "kaldırıldı yayından removed" : "",
       ]
         .filter(Boolean)
         .join(" ")
@@ -314,7 +317,10 @@ function buildCard(tpl, r) {
     .join("");
   if (r.devren)
     badgeHtml += `<span class="badge devren">${t("badgeDevren")}</span>`;
+  if (r.removed)
+    badgeHtml += `<span class="badge removed">${t("badgeRemoved")}</span>`;
   node.querySelector(".card-badges").innerHTML = badgeHtml;
+  node.classList.toggle("removed", !!r.removed);
 
   const titleA = node.querySelector(".card-title");
   titleA.textContent = r.title || "İlan";
@@ -492,6 +498,10 @@ function wireFilters() {
     state.filters.devren = e.target.checked;
     render();
   });
+  $("#fRemoved").addEventListener("change", (e) => {
+    state.filters.removed = e.target.checked;
+    render();
+  });
   $("#sort").addEventListener("change", (e) => {
     state.sort = e.target.value;
     render();
@@ -511,10 +521,12 @@ function wireFilters() {
       tag: "",
       q: "",
       devren: false,
+      removed: false,
     };
     state.sort = "savedAt-desc";
     $("#search").value = "";
     $("#fDevren").checked = false;
+    $("#fRemoved").checked = false;
     rebuildFilters();
     render();
   });
@@ -716,6 +728,7 @@ function toCsv(list) {
     "ilce",
     "mahalle",
     "status",
+    "removed",
     "tags",
     "notes",
     "agency",
@@ -745,6 +758,7 @@ function toCsv(list) {
       r.location ? r.location.ilce : "",
       r.location ? r.location.mahalle : "",
       r.status,
+      r.removed ? "1" : "",
       (r.tags || []).join("|"),
       r.notes,
       r.contact ? r.contact.agency || r.contact.name || "" : "",

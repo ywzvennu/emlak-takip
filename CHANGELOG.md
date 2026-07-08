@@ -35,6 +35,12 @@ carry over).
 
 ### Changed
 
+- **Removed/expired listing detection** — revisiting a saved listing that
+  sahibinden no longer publishes marks it (a dedicated `removed` flag, separate
+  from the user's workflow status) and shows a red "Yayından kaldırıldı" badge +
+  dimmed card + filter in the dashboard. Detection is conservative (only when
+  the live-listing markers are gone), and the mark clears automatically if the
+  listing is seen live again. Also added dashboard list ↔ map jump navigation.
 - **Devren (business-transfer) listings** are now captured as a distinct
   `devren` flag (from the slug), shown as a badge in the popup + dashboard,
   filterable in the dashboard, and included in CSV export.

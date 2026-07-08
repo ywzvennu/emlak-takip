@@ -97,6 +97,35 @@ test("recordSeen only tracks saved listings and grows price history", async () =
   assert.equal(rec.price.amount, 2300000);
 });
 
+test("markRemoved flags a saved listing without touching its status", async () => {
+  // no-op when the listing isn't saved
+  let res = await store.markRemoved("sahibinden:12345");
+  assert.equal(res.tracked, false);
+
+  await store.upsert(payload());
+  await store.updateByKey("sahibinden:12345", { status: "arandi" });
+
+  res = await store.markRemoved("sahibinden:12345");
+  assert.equal(res.tracked, true);
+  assert.equal(res.removed, true);
+
+  const rec = await store.getByKey("sahibinden:12345");
+  assert.equal(rec.removed, true);
+  assert.ok(rec.removedAt > 0);
+  assert.equal(rec.status, "arandi"); // workflow status is untouched
+});
+
+test("seeing a removed listing live again clears the removed mark", async () => {
+  await store.upsert(payload());
+  await store.markRemoved("sahibinden:12345");
+  assert.equal((await store.getByKey("sahibinden:12345")).removed, true);
+
+  await store.recordSeen(payload());
+  const rec = await store.getByKey("sahibinden:12345");
+  assert.equal(rec.removed, false);
+  assert.equal(rec.removedAt, null);
+});
+
 test("removeByKey deletes by composite key", async () => {
   await store.upsert(payload());
   assert.equal(await store.removeByKey("sahibinden:12345"), true);

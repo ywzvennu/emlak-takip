@@ -76,6 +76,11 @@
   const PHONE_RE =
     /(?:\+?90[\s-]?)?(?:0[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}/g;
 
+  // Wording sahibinden uses when a listing is no longer published. Best-effort:
+  // covers "yayından kaldırıldı/kaldırılmıştır", "ilan yayında değil", etc.
+  const REMOVED_RE =
+    /(yay[ıi]ndan kald[ıi]r[ıi]l|ilan yay[ıi]nda de[ğg]il|yay[ıi]nda olmayan|kald[ıi]r[ıi]lan ilan)/i;
+
   const slugMatch = (url) => url.match(/\/ilan\/([a-z0-9.-]+?)-(\d+)\/detay/i);
 
   function extractPhones(str) {
@@ -284,6 +289,21 @@
     ilanTarihi(doc, url) {
       return this.attributes(doc, url)["İlan Tarihi"] || null;
     },
+    // Removed/expired listing detection (best-effort). Only flags a page as
+    // removed when the normal live-listing markers are absent AND a removal
+    // notice is present — so a slow/partial render of a live page is never
+    // mistaken for a removal. Fails toward under-firing.
+    expired(doc) {
+      if (doc.querySelector(".classifiedDetailTitle, .classifiedInfoList"))
+        return false;
+      const notice = doc.querySelectorAll(
+        'h1, h2, h3, [class*="removed" i], [class*="error" i], [class*="warning" i], [class*="passiveInfo" i]'
+      );
+      for (const el of notice)
+        if (REMOVED_RE.test(el.textContent || "")) return true;
+      return false;
+    },
+
     // Sahibinden is fully DOM-mapped above; keep meta + JSON-LD as extra raw.
     raw: (doc) => U.rawSignals(doc),
   };

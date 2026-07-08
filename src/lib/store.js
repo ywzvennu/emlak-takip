@@ -232,6 +232,8 @@ export async function upsert(payload) {
       notes: "",
       tags: [],
       status: "kaydedildi",
+      removed: false,
+      removedAt: null,
       savedAt: now,
       updatedAt: now,
       lastSeenAt: now,
@@ -268,6 +270,9 @@ export async function upsert(payload) {
     price: payload.price ?? existing.price,
     updatedAt: now,
     lastSeenAt: now,
+    // Seeing it live again clears any prior "removed" mark (re-listed).
+    removed: false,
+    removedAt: null,
   };
   if (hasNewPrice(existing, payload.price)) {
     merged.priceHistory = [
@@ -301,9 +306,26 @@ export async function recordSeen(payload) {
     priceChanged = true;
   }
   existing.lastSeenAt = now;
+  // Seen live -> not removed (in case it was previously marked, now re-listed).
+  existing.removed = false;
+  existing.removedAt = null;
   list[idx] = existing;
   await write(list);
   return { tracked: true, priceChanged };
+}
+
+// Mark a saved listing as removed/expired (the page no longer shows it). Leaves
+// the user's workflow status untouched — removal is a lifecycle fact, not a
+// workflow state. No-op if the listing isn't saved or is already marked.
+export async function markRemoved(key) {
+  const list = await read();
+  const idx = list.findIndex((x) => x.key === key);
+  if (idx === -1) return { tracked: false, removed: false };
+  if (!list[idx].removed) {
+    list[idx] = { ...list[idx], removed: true, removedAt: Date.now() };
+    await write(list);
+  }
+  return { tracked: true, removed: true };
 }
 
 export async function updateByKey(key, patch) {

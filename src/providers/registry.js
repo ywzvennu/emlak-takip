@@ -25,6 +25,7 @@
     "photos",
     "thumbnail",
     "ilanTarihi",
+    "expired",
   ];
 
   function defaultFor(field) {
@@ -34,6 +35,7 @@
       return { il: null, ilce: null, mahalle: null, raw: null };
     if (field === "category") return "diger";
     if (field === "devren") return false;
+    if (field === "expired") return false;
     return null;
   }
 

@@ -89,6 +89,11 @@
   "badgeDevren": { "message": "Devren" },
   "filterDevren": { "message": "Devren" },
   "filterDevrenTip": { "message": "Yalnızca devren ilanları göster" },
+  "badgeRemoved": { "message": "Yayından kaldırıldı" },
+  "filterRemoved": { "message": "Kaldırılanlar" },
+  "filterRemovedTip": {
+    "message": "Yalnızca yayından kaldırılan ilanları göster"
+  },
   "catKonut": { "message": "Konut" },
   "catTicari": { "message": "Ticari" },
   "catArsa": { "message": "Arsa" },
