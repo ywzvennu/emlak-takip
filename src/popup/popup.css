@@ -14,6 +14,9 @@
   --thumb: #f2f2f2;
   --badge-bg: #dcf3e5;
   --badge-line: #b6e0c4;
+  --devren-bg: #fdf0d5;
+  --devren-line: #ecd08a;
+  --devren-ink: #7a5a00;
 }
 
 :root[data-theme="dark"] {
@@ -28,6 +31,9 @@
   --thumb: #2a2d31;
   --badge-bg: #123322;
   --badge-line: #1f5136;
+  --devren-bg: #3a2f13;
+  --devren-line: #6b5620;
+  --devren-ink: #e6c877;
 }
 
 body {
@@ -121,6 +127,12 @@ body {
   border-radius: 999px;
   background: var(--badge-bg);
   border: 1px solid var(--badge-line);
+}
+
+.badge.devren {
+  background: var(--devren-bg);
+  border-color: var(--devren-line);
+  color: var(--devren-ink);
 }
 
 .price {

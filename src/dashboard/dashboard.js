@@ -10,6 +10,7 @@ import {
 } from "../lib/i18n.js";
 import { point, boundsOf, osmUrl } from "../lib/geo.js";
 import { initTheme, updateTheme } from "../lib/theme.js";
+import { fmtPrice, fmtPhone, specLine } from "../lib/format.js";
 
 /* global L */ // Leaflet, loaded as a classic script before this module
 
@@ -17,21 +18,19 @@ const $ = (sel) => document.querySelector(sel);
 
 const state = {
   all: [],
-  filters: { category: "", type: "", status: "", tag: "", q: "" },
+  filters: {
+    category: "",
+    type: "",
+    status: "",
+    tag: "",
+    q: "",
+    devren: false,
+  },
   sort: "savedAt-desc",
   view: "list",
   selectMode: false,
   selected: new Set(),
 };
-
-const nf = new Intl.NumberFormat("tr-TR");
-
-function fmtPrice(price) {
-  if (!price) return "—";
-  if (price.amount != null)
-    return `${nf.format(price.amount)} ${price.currency || ""}`.trim();
-  return price.raw || "—";
-}
 
 function fmtDate(ts) {
   if (!ts) return "";
@@ -41,27 +40,6 @@ function fmtDate(ts) {
     month: "short",
     year: "numeric",
   });
-}
-
-function specLine(attrs) {
-  if (!attrs) return "";
-  const keys = [
-    "m² (Brüt)",
-    "m² (Net)",
-    "m²",
-    "Oda Sayısı",
-    "Bina Yaşı",
-    "Isıtma",
-    "İmar Durumu",
-    "Kaks (Emsal)",
-  ];
-  return keys
-    .filter((k) => attrs[k])
-    .map(
-      (k) =>
-        `${k.replace(" (Brüt)", " br.").replace(" (Net)", " net").replace(" Sayısı", "")}: ${attrs[k]}`
-    )
-    .join(" · ");
 }
 
 function escapeHtml(s) {
@@ -76,13 +54,6 @@ function escapeHtml(s) {
         "'": "&#39;",
       })[c]
   );
-}
-
-// national 10-digit -> "0532 111 22 33"
-function fmtPhone(p) {
-  const d = String(p || "");
-  if (d.length !== 10) return d;
-  return `0${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`;
 }
 
 function contactLine(c) {
@@ -166,11 +137,12 @@ function rebuildFilters() {
 // ---------- filtering / sorting ----------
 
 function applyFilters(list) {
-  const { category, type, status, tag, q } = state.filters;
+  const { category, type, status, tag, q, devren } = state.filters;
   const needle = q.trim().toLowerCase();
   return list.filter((r) => {
     if (category && r.category !== category) return false;
     if (type && r.listingType !== type) return false;
+    if (devren && !r.devren) return false;
     if (status && r.status !== status) return false;
     if (tag && !(r.tags || []).includes(tag)) return false;
     if (needle) {
@@ -179,6 +151,7 @@ function applyFilters(list) {
         r.location && r.location.raw,
         r.notes,
         (r.tags || []).join(" "),
+        r.devren ? "devren" : "",
       ]
         .filter(Boolean)
         .join(" ")
@@ -231,7 +204,11 @@ function ensureMap() {
 }
 
 function mapPopupHtml(r) {
-  const cat = [categoryLabel(r.category), typeLabel(r.listingType)]
+  const cat = [
+    categoryLabel(r.category),
+    typeLabel(r.listingType),
+    r.devren ? t("badgeDevren") : null,
+  ]
     .filter(Boolean)
     .join(" · ");
   const loc = (r.location && r.location.raw) || "";
@@ -239,7 +216,7 @@ function mapPopupHtml(r) {
     `<div class="map-pop">` +
     `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">` +
     `<strong>${escapeHtml(r.title || "İlan")}</strong></a>` +
-    `<div class="mp-price">${escapeHtml(fmtPrice(r.price))}</div>` +
+    `<div class="mp-price">${escapeHtml(fmtPrice(r.price, "—"))}</div>` +
     (cat ? `<div class="mp-cat">${escapeHtml(cat)}</div>` : "") +
     (loc ? `<div class="mp-loc">${escapeHtml(loc)}</div>` : "") +
     `</div>`
@@ -304,16 +281,19 @@ function buildCard(tpl, r) {
   const badges = [];
   if (r.category) badges.push(categoryLabel(r.category));
   if (r.listingType) badges.push(typeLabel(r.listingType));
-  node.querySelector(".card-badges").innerHTML = badges
+  let badgeHtml = badges
     .filter(Boolean)
     .map((b) => `<span class="badge">${b}</span>`)
     .join("");
+  if (r.devren)
+    badgeHtml += `<span class="badge devren">${t("badgeDevren")}</span>`;
+  node.querySelector(".card-badges").innerHTML = badgeHtml;
 
   const titleA = node.querySelector(".card-title");
   titleA.textContent = r.title || "İlan";
   titleA.href = r.url;
 
-  node.querySelector(".price-now").textContent = fmtPrice(r.price);
+  node.querySelector(".price-now").textContent = fmtPrice(r.price, "—");
   const delta = priceDelta(r);
   const deltaEl = node.querySelector(".price-delta");
   if (delta) {
@@ -330,7 +310,10 @@ function buildCard(tpl, r) {
     mapLink.href = osmUrl(pt[0], pt[1]);
     mapLink.classList.remove("hidden");
   }
-  node.querySelector(".card-specs").textContent = specLine(r.attributes);
+  node.querySelector(".card-specs").textContent = specLine(
+    r.attributes,
+    r.category
+  );
 
   const contactHtml = contactLine(r.contact);
   if (contactHtml) {
@@ -395,7 +378,7 @@ function renderHistory(container, record) {
         const down = p.amount < prev.amount;
         tag = ` <span class="hist-delta ${down ? "down" : "up"}">${down ? "▼" : "▲"}</span>`;
       }
-      return `<div class="hist-row"><span>${fmtDate(p.at)}</span><span>${fmtPrice(p)}${tag}</span></div>`;
+      return `<div class="hist-row"><span>${fmtDate(p.at)}</span><span>${fmtPrice(p, "—")}${tag}</span></div>`;
     })
     .join("");
 }
@@ -477,6 +460,10 @@ function wireFilters() {
     state.filters.tag = e.target.value;
     render();
   });
+  $("#fDevren").addEventListener("change", (e) => {
+    state.filters.devren = e.target.checked;
+    render();
+  });
   $("#sort").addEventListener("change", (e) => {
     state.sort = e.target.value;
     render();
@@ -489,9 +476,17 @@ function wireFilters() {
     }, 180)
   );
   $("#clearFilters").addEventListener("click", () => {
-    state.filters = { category: "", type: "", status: "", tag: "", q: "" };
+    state.filters = {
+      category: "",
+      type: "",
+      status: "",
+      tag: "",
+      q: "",
+      devren: false,
+    };
     state.sort = "savedAt-desc";
     $("#search").value = "";
+    $("#fDevren").checked = false;
     rebuildFilters();
     render();
   });
@@ -675,6 +670,7 @@ function toCsv(list) {
     "title",
     "category",
     "listingType",
+    "devren",
     "priceAmount",
     "currency",
     "il",
@@ -703,6 +699,7 @@ function toCsv(list) {
       r.title,
       r.category,
       r.listingType,
+      r.devren ? "1" : "",
       r.price ? r.price.amount : "",
       r.price ? r.price.currency : "",
       r.location ? r.location.il : "",

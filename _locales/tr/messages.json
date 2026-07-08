@@ -86,6 +86,9 @@
   "sortPriceDesc": { "message": "Fiyat (azalan)" },
   "sortUpdated": { "message": "Son güncelleme" },
 
+  "badgeDevren": { "message": "Devren" },
+  "filterDevren": { "message": "Devren" },
+  "filterDevrenTip": { "message": "Yalnızca devren ilanları göster" },
   "catKonut": { "message": "Konut" },
   "catTicari": { "message": "Ticari" },
   "catArsa": { "message": "Arsa" },
