@@ -254,6 +254,7 @@ export async function upsert(payload) {
     slug: payload.slug ?? existing.slug,
     category: payload.category ?? existing.category,
     listingType: payload.listingType ?? existing.listingType,
+    devren: payload.devren ?? existing.devren,
     location: payload.location ?? existing.location,
     geo: payload.geo ?? existing.geo,
     attributes: payload.attributes ?? existing.attributes,

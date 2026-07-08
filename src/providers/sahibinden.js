@@ -138,6 +138,13 @@
       return null;
     },
 
+    // Business-transfer listing (devren): the going concern / lease is handed
+    // over. Orthogonal to category+type, flagged by a "devren" slug token.
+    devren(doc, url) {
+      const m = slugMatch(url);
+      return !!(m && /(?:^|-)devren(?:-|$)/.test(m[1]));
+    },
+
     price(doc) {
       for (const scopeSel of SELECTORS.priceScope) {
         const scope = doc.querySelector(scopeSel);

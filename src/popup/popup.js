@@ -8,6 +8,7 @@ import {
 } from "../lib/i18n.js";
 import { point, osmUrl } from "../lib/geo.js";
 import { initTheme } from "../lib/theme.js";
+import { fmtPrice, fmtPhone, specLine } from "../lib/format.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -22,38 +23,6 @@ function sendToTab(tabId, message) {
       resolve(null);
     }
   });
-}
-
-function fmtPrice(price) {
-  if (!price) return "";
-  if (price.amount != null) {
-    const n = new Intl.NumberFormat("tr-TR").format(price.amount);
-    const cur = price.currency || "";
-    return `${n} ${cur}`.trim();
-  }
-  return price.raw || "";
-}
-
-function fmtPhone(p) {
-  const d = String(p || "");
-  if (d.length !== 10) return d;
-  return `0${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}`;
-}
-
-function specLine(attrs) {
-  if (!attrs) return "";
-  const keys = [
-    "m² (Brüt)",
-    "m² (Net)",
-    "m²",
-    "Oda Sayısı",
-    "Bina Yaşı",
-    "İmar Durumu",
-  ];
-  return keys
-    .filter((k) => attrs[k])
-    .map((k) => `${k.replace("Sayısı", "").trim()}: ${attrs[k]}`)
-    .join(" · ");
 }
 
 function render(payload, saved) {
@@ -72,14 +41,17 @@ function render(payload, saved) {
   const badges = [];
   if (payload.category) badges.push(categoryLabel(payload.category));
   if (payload.listingType) badges.push(typeLabel(payload.listingType));
-  $("badges").innerHTML = badges
+  let badgeHtml = badges
     .filter(Boolean)
     .map((b) => `<span class="badge">${b}</span>`)
     .join("");
+  if (payload.devren)
+    badgeHtml += `<span class="badge devren">${t("badgeDevren")}</span>`;
+  $("badges").innerHTML = badgeHtml;
 
   $("price").textContent = fmtPrice(payload.price);
   $("loc").textContent = payload.location ? payload.location.raw || "" : "";
-  $("specs").textContent = specLine(payload.attributes);
+  $("specs").textContent = specLine(payload.attributes, payload.category);
 
   const c = payload.contact;
   if (c) {

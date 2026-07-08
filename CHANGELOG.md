@@ -35,6 +35,13 @@ carry over).
 
 ### Changed
 
+- **Devren (business-transfer) listings** are now captured as a distinct
+  `devren` flag (from the slug), shown as a badge in the popup + dashboard,
+  filterable in the dashboard, and included in CSV export.
+- **Category-aware spec line** — the popup/dashboard one-line summary now shows
+  the attributes that matter per category (konut: oda/m²/aidat; arsa:
+  imar/kaks/m² fiyatı; ticari: tür/yapı durumu). Shared `fmtPrice`/`fmtPhone`/
+  `specLine` helpers were centralized into `src/lib/format.js` and unit-tested.
 - **Focused on Sahibinden as the sole active provider.** The running extension
   now matches and requests only `sahibinden.com`; the Hepsiemlak/Emlakjet
   provider code and tests are kept in-tree to re-enable once verified. Dropped

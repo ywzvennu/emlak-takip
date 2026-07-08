@@ -59,6 +59,7 @@ test("sahibinden: full record incl. features (Özellikler)", async () => {
   assert.equal(rec.ilanNo, "1234567");
   assert.equal(rec.category, "konut");
   assert.equal(rec.listingType, "satilik");
+  assert.equal(rec.devren, false);
   assert.equal(rec.price.amount, 2750000);
   assert.equal(rec.location.mahalle, "Mahalle C");
   assert.equal(rec.attributes["Oda Sayısı"], "3+1");
@@ -67,6 +68,16 @@ test("sahibinden: full record incl. features (Özellikler)", async () => {
     "İç Özellikler": ["Ankastre Fırın", "Ebeveyn Banyosu"],
   });
   assert.ok(rec.raw && rec.raw.meta); // meta/JSON-LD kept as raw
+});
+
+test("sahibinden: detects devren (business-transfer) from the slug", async () => {
+  const url =
+    "https://www.sahibinden.com/ilan/emlak-is-yeri-devren-kiralik-ornek-7654321/detay";
+  const { rec } = await build(url, "sahibinden-ilan.html");
+  assert.equal(rec.ilanNo, "7654321");
+  assert.equal(rec.category, "ticari");
+  assert.equal(rec.listingType, "kiralik");
+  assert.equal(rec.devren, true);
 });
 
 test("hepsiemlak: maps its /api/realties response (offline)", async () => {

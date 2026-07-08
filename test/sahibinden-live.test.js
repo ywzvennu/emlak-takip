@@ -30,54 +30,63 @@ const CASES = {
     category: "arsa",
     type: "kiralik",
     price: 260000,
+    devren: false,
   }, // dotted slug
   "arsa-satilik.html": {
     ilanNo: "1318432286",
     category: "arsa",
     type: "satilik",
     price: 3600000,
+    devren: false,
   },
   "konut-devren-satilik.html": {
     ilanNo: "1327091086",
     category: "konut",
     type: "satilik",
     price: 14750000,
+    devren: true,
   },
   "konut-kiralik.html": {
     ilanNo: "1327189715",
     category: "konut",
     type: "kiralik",
     price: 18000,
+    devren: false,
   },
   "konut-satilik.html": {
     ilanNo: "1322031369",
     category: "konut",
     type: "satilik",
     price: 22000000,
+    devren: false,
   },
   "ticari-devren-kiralik.html": {
     ilanNo: "1327184082",
     category: "ticari",
     type: "kiralik",
     price: 800000,
+    devren: true,
   },
   "ticari-devren-satilik.html": {
     ilanNo: "1323033175",
     category: "ticari",
     type: "satilik",
     price: 2050000,
+    devren: true,
   },
   "ticari-kiralik.html": {
     ilanNo: "1190119993",
     category: "ticari",
     type: "kiralik",
     price: 130000,
+    devren: false,
   },
   "ticari-satilik.html": {
     ilanNo: "1324217390",
     category: "ticari",
     type: "satilik",
     price: 14400000,
+    devren: false,
   }, // dotted slug
 };
 
@@ -109,6 +118,7 @@ for (const [file, want] of Object.entries(CASES)) {
     assert.equal(rec.ilanNo, want.ilanNo);
     assert.equal(rec.category, want.category);
     assert.equal(rec.listingType, want.type);
+    assert.equal(rec.devren, want.devren);
     assert.equal(rec.price && rec.price.amount, want.price);
 
     // The rest of the field methods should all produce something.

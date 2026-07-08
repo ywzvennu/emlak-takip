@@ -86,6 +86,9 @@
   "sortPriceDesc": { "message": "Price (descending)" },
   "sortUpdated": { "message": "Last updated" },
 
+  "badgeDevren": { "message": "Transfer" },
+  "filterDevren": { "message": "Transfer" },
+  "filterDevrenTip": { "message": "Show business-transfer listings only" },
   "catKonut": { "message": "Residential" },
   "catTicari": { "message": "Commercial" },
   "catArsa": { "message": "Land" },

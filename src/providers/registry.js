@@ -14,6 +14,7 @@
     "title",
     "category",
     "listingType",
+    "devren",
     "price",
     "location",
     "geo",
@@ -32,6 +33,7 @@
     if (field === "location")
       return { il: null, ilce: null, mahalle: null, raw: null };
     if (field === "category") return "diger";
+    if (field === "devren") return false;
     return null;
   }
 
