@@ -4,8 +4,9 @@
 //   - reflects saved state, auto-saves (if enabled), sends a passive SEEN ping
 //   - responds to the popup's CAPTURE request
 //
-// SPA-aware: hepsiemlak/emlakjet change the URL client-side, so we re-run on
-// every URL change (poll + popstate), not just the initial load.
+// Sahibinden is server-rendered: every detail page is a full navigation that
+// re-injects this script, so we only run on load (plus one delayed retry for
+// anything the page fills in late) — no SPA URL-polling needed.
 (function () {
   const cap = self.EmlakTakipCapture;
   if (!cap || !cap.captureIlan) return;
@@ -114,22 +115,9 @@
     send({ type: "SEEN_ILAN", payload });
   }
 
-  // Run now and once more shortly after, to catch content the SPA renders late.
-  function trigger() {
-    process();
-    setTimeout(process, 1200);
-  }
-
-  trigger();
-
-  let lastHref = location.href;
-  setInterval(() => {
-    if (location.href !== lastHref) {
-      lastHref = location.href;
-      trigger();
-    }
-  }, 800);
-  window.addEventListener("popstate", trigger);
+  // Run now and once more shortly after, to catch content the page fills in late.
+  process();
+  setTimeout(process, 1200);
 
   // Popup asks the active tab to capture what's on screen.
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
