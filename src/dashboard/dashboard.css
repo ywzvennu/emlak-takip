@@ -242,6 +242,20 @@ body {
   color: var(--devren-ink);
 }
 
+.badge.removed {
+  background: var(--danger-bg);
+  border-color: var(--danger-line);
+  color: var(--red);
+}
+
+/* removed/expired listing: dim the whole card, but keep it legible */
+.card.removed {
+  opacity: 0.62;
+}
+.card.removed:hover {
+  opacity: 1;
+}
+
 .card-title {
   font-weight: 600;
   font-size: 14px;

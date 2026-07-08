@@ -47,6 +47,8 @@ function render(payload, saved) {
     .join("");
   if (payload.devren)
     badgeHtml += `<span class="badge devren">${t("badgeDevren")}</span>`;
+  if (payload.expired)
+    badgeHtml += `<span class="badge removed">${t("badgeRemoved")}</span>`;
   $("badges").innerHTML = badgeHtml;
 
   $("price").textContent = fmtPrice(payload.price);

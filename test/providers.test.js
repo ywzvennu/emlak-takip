@@ -80,6 +80,21 @@ test("sahibinden: detects devren (business-transfer) from the slug", async () =>
   assert.equal(rec.devren, true);
 });
 
+test("sahibinden: expired() flags a removed page, never a live one", () => {
+  const P = R.getProvider(SAHIBINDEN_URL);
+  const removed = new JSDOM(
+    "<h1>Bu ilan yayından kaldırılmıştır</h1><p>Başka ilanlara göz atın.</p>",
+    { url: SAHIBINDEN_URL }
+  ).window.document;
+  assert.equal(P.expired(removed), true);
+
+  // a live listing page is never flagged, even if some text mentions removal
+  const live = new JSDOM(fixtureHtml("sahibinden-ilan.html"), {
+    url: SAHIBINDEN_URL,
+  }).window.document;
+  assert.equal(P.expired(live), false);
+});
+
 test("hepsiemlak: maps its /api/realties response (offline)", async () => {
   const { rec } = await build(HEPSI_URL, "hepsiemlak-ilan.html");
   assert.equal(rec.provider, "hepsiemlak");

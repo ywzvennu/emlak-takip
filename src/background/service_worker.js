@@ -63,6 +63,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           sendResponse({ ok: true, ...res });
           break;
         }
+        case "MARK_REMOVED": {
+          const res = await store.markRemoved(msg.key);
+          sendResponse({ ok: true, ...res });
+          break;
+        }
         case "MAYBE_AUTOSAVE": {
           // Save on load only when auto-save is enabled and it isn't saved yet.
           if (!(await store.getAutoSave())) {

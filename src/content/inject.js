@@ -95,9 +95,21 @@
       removeButton();
       return;
     }
-    ensureButton();
     const payload = await captureIlan();
     if (!payload) return; // detail URL, page not rendered yet — a retry follows
+
+    // Listing no longer published: no point offering to save it; if we already
+    // have it saved, mark it removed so the dashboard reflects that.
+    if (payload.expired) {
+      removeButton();
+      if (!handled.has(payload.key)) {
+        handled.add(payload.key);
+        send({ type: "MARK_REMOVED", key: payload.key });
+      }
+      return;
+    }
+
+    ensureButton();
 
     const check = await send({ type: "CHECK_SAVED", key: payload.key });
     if (check && check.ok) setButton(check.saved);
