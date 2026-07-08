@@ -51,13 +51,23 @@
   "statusTip": { "message": "Status" },
   "notesPlaceholder": { "message": "Add a note…" },
   "priceHistoryBtn": { "message": "Price history" },
-  "deleteBtn": { "message": "Delete" },
   "addedOn": {
     "message": "Added: $date$",
     "placeholders": { "date": { "content": "$1", "example": "Jul 6, 2026" } }
   },
   "noPriceHistory": { "message": "No price history." },
-  "confirmDelete": { "message": "Delete this listing?" },
+  "selectModeBtn": { "message": "Delete…" },
+  "selectAll": { "message": "Select all" },
+  "deleteSelected": { "message": "Delete selected" },
+  "cancelSelect": { "message": "Cancel" },
+  "selectedCount": {
+    "message": "$count$ selected",
+    "placeholders": { "count": { "content": "$1", "example": "3" } }
+  },
+  "confirmDeleteMany": {
+    "message": "Delete $count$ listings?",
+    "placeholders": { "count": { "content": "$1", "example": "3" } }
+  },
   "importResult": {
     "message": "$added$ new listings added. Total: $total$.",
     "placeholders": {
