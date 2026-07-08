@@ -131,6 +131,8 @@
 
   "featuresBtn": { "message": "Özellikler" },
   "noFeatures": { "message": "Özellik belirtilmemiş." },
+  "attrsBtn": { "message": "Tüm detaylar" },
+  "galleryBtn": { "message": "Fotoğraflar" },
 
   "autoSaveLabel": { "message": "Otomatik kaydet" },
   "autoSaveTip": {

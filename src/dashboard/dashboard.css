@@ -434,8 +434,50 @@ body {
 .select-mode .card-foot,
 .select-mode .history,
 .select-mode .desc,
-.select-mode .features-box {
+.select-mode .features-box,
+.select-mode .attrs-box,
+.select-mode .gallery-box {
   display: none;
+}
+
+/* --- full detail: attributes table + photo gallery --- */
+.attrs-box,
+.gallery-box {
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.attr-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--line);
+}
+.attr-row:last-child {
+  border-bottom: 0;
+}
+.attr-k {
+  color: var(--muted);
+}
+.attr-v {
+  text-align: right;
+  font-weight: 600;
+}
+.gallery-box {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+}
+.gallery-box img {
+  height: 64px;
+  width: 88px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
 }
 .card.selected {
   outline: 2px solid var(--green);
