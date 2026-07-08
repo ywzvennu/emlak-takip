@@ -101,6 +101,8 @@
   "statusElendi": { "message": "Rejected" },
 
   "mapLink": { "message": "Map" },
+  "locateBtn": { "message": "Show on map" },
+  "toListBtn": { "message": "Show in list" },
   "descBtn": { "message": "Description" },
   "noDescription": { "message": "No description." },
   "sellerOwner": { "message": "From owner" },
