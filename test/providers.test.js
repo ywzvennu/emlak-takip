@@ -80,6 +80,33 @@ test("sahibinden: detects devren (business-transfer) from the slug", async () =>
   assert.equal(rec.devren, true);
 });
 
+test("sahibinden: media() reads video JSON-LD + tab availability", () => {
+  const P = R.getProvider(SAHIBINDEN_URL);
+  const ld = JSON.stringify({
+    "@type": "VideoObject",
+    embedUrl: "https://cdn.example/x.m3u8",
+    thumbnailUrl: ["https://cdn.example/t.jpg"],
+    uploadDate: "2026-06-14T22:48:20+03:00",
+  });
+  const html =
+    '<ul class="classifiedDetailMegaVideo">' +
+    '<li><a class="megaPhotoLink">Foto</a></li>' +
+    '<li class="passive"><a class="photo-clip-link">İlan Klibi</a></li>' +
+    '<li><a class="videoLink trackClick">Video</a></li>' +
+    '<li><a class="virtualTourLink passive">Sanal Tur</a></li>' +
+    "</ul>" +
+    `<script type="application/ld+json">${ld}</script>`;
+  const doc = new JSDOM(html, { url: SAHIBINDEN_URL }).window.document;
+  const m = P.media(doc);
+  assert.equal(m.hasVideo, true);
+  assert.equal(m.hasIlanKlibi, false); // wrapper is passive
+  assert.equal(m.hasVirtualTour, false); // link is passive
+  assert.equal(m.hasSahiDeko, false);
+  assert.equal(m.video.url, "https://cdn.example/x.m3u8");
+  assert.equal(m.video.thumbnail, "https://cdn.example/t.jpg");
+  assert.equal(m.video.uploadDate, "2026-06-14T22:48:20+03:00");
+});
+
 test("sahibinden: expired() flags a removed page, never a live one", () => {
   const P = R.getProvider(SAHIBINDEN_URL);
   const removed = new JSDOM(

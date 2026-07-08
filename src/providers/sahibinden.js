@@ -286,6 +286,58 @@
       return U.ogImage(doc) || this.photos(doc)[0] || null;
     },
 
+    // Listing media. The `.classifiedDetailMegaVideo` tab bar advertises each
+    // medium; a tab is `passive` when that medium isn't present. Uploaded-video
+    // details (HLS url, poster, date) come from the JSON-LD VideoObject.
+    media(doc) {
+      const out = {
+        video: null,
+        hasVideo: false,
+        hasIlanKlibi: false,
+        hasVirtualTour: false,
+        hasSahiDeko: false,
+      };
+      const active = (cls) => {
+        const a = doc.querySelector(`.classifiedDetailMegaVideo a.${cls}`);
+        if (!a) return false;
+        const li = a.closest("li");
+        return (
+          !a.classList.contains("passive") &&
+          !(li && li.classList.contains("passive"))
+        );
+      };
+      out.hasVideo = active("videoLink");
+      out.hasIlanKlibi = active("photo-clip-link");
+      out.hasVirtualTour = active("virtualTourLink");
+      out.hasSahiDeko = active("virtualStagingLink");
+
+      for (const s of U.qa(doc, 'script[type="application/ld+json"]')) {
+        let j;
+        try {
+          j = JSON.parse(s.textContent);
+        } catch {
+          continue;
+        }
+        for (const o of Array.isArray(j) ? j : [j]) {
+          const ty = o && o["@type"];
+          const isVideo =
+            ty === "VideoObject" ||
+            (Array.isArray(ty) && ty.includes("VideoObject"));
+          if (!isVideo) continue;
+          const thumb = Array.isArray(o.thumbnailUrl)
+            ? o.thumbnailUrl[0]
+            : o.thumbnailUrl;
+          out.video = {
+            url: o.embedUrl || o.contentUrl || null,
+            thumbnail: thumb || null,
+            uploadDate: o.uploadDate || null,
+          };
+          out.hasVideo = true;
+        }
+      }
+      return out;
+    },
+
     ilanTarihi(doc, url) {
       return this.attributes(doc, url)["İlan Tarihi"] || null;
     },

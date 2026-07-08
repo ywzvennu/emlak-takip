@@ -90,6 +90,19 @@ const CASES = {
   }, // dotted slug
 };
 
+// Media availability per capture (klibi/sahiDeko are all absent in this set).
+const MEDIA = {
+  "arsa-kiralik.html": { video: false, tour: false },
+  "arsa-satilik.html": { video: true, tour: false },
+  "konut-devren-satilik.html": { video: false, tour: true },
+  "konut-kiralik.html": { video: true, tour: false },
+  "konut-satilik.html": { video: true, tour: false },
+  "ticari-devren-kiralik.html": { video: true, tour: false },
+  "ticari-devren-satilik.html": { video: true, tour: false },
+  "ticari-kiralik.html": { video: false, tour: false },
+  "ticari-satilik.html": { video: false, tour: false },
+};
+
 for (const [file, want] of Object.entries(CASES)) {
   const path = LIVE_DIR + file;
   const opts = existsSync(path)
@@ -137,5 +150,16 @@ for (const [file, want] of Object.entries(CASES)) {
     assert.ok(rec.photos.length >= 1, "at least one photo");
     assert.ok(rec.contact, "contact block present");
     assert.ok(rec.description, "description present");
+
+    // Media availability + video details.
+    const media = MEDIA[file];
+    assert.equal(rec.media.hasVideo, media.video, "hasVideo");
+    assert.equal(rec.media.hasVirtualTour, media.tour, "hasVirtualTour");
+    if (media.video) {
+      assert.ok(
+        rec.media.video && rec.media.video.url && rec.media.video.uploadDate,
+        "uploaded-video details present"
+      );
+    }
   });
 }
