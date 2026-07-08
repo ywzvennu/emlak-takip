@@ -4,52 +4,8 @@
     <meta charset="utf-8" />
     <meta property="og:title" content="Örnek 3+1 (og)" />
     <title>Hepsiemlak</title>
-    <!-- The page embeds the full realtyDetail JSON in an inline script; the
-         provider reads it from the DOM (no network). Values are synthetic.
-         (This file is prettier-ignored so the JSON keys stay quoted.) -->
-    <script>
-      window.__STATE__ = {"realtyDetail": {
-        "listingId": "123456-7",
-        "realtyId": 999001,
-        "title": "Örnek 3+1 Satılık Daire",
-        "price": 24100000,
-        "currency": "TL",
-        "description": "<p>Örnek açıklama.</p><p>İkinci paragraf.</p>",
-        "images": ["ds01/a/1.jpg", "ds01/a/2.jpg"],
-        "city": {"name": "İl A"},
-        "county": {"name": "İlçe B"},
-        "district": {"name": "Mahalle C"},
-        "mapLocation": {"lat": 41.0086, "lon": 28.9802},
-        "isMapHidden": false,
-        "sqm": {"netSqm": 117, "grossSqm": [131]},
-        "room": [3],
-        "livingRoom": [1],
-        "bathRoom": 2,
-        "age": 1,
-        "floor": {"name": "1. Kat", "count": 3},
-        "heating": {"name": "Kombi"},
-        "landRegisterName": "Kat Mülkiyeti",
-        "furnished": false,
-        "usage": {"name": "Boş"},
-        "credit": {"name": "Uygun"},
-        "category": {"typeName": "Satılık"},
-        "subCategory": {"typeName": "Daire"},
-        "mainCategory": {"name": "Konut"},
-        "firm": {"name": "Örnek Emlak Ofisi"},
-        "firmUser": {
-          "firstName": "Ad",
-          "lastName": "Soyad",
-          "phones": [{"countryCode": "+90", "areaCode": "555", "phoneNumber": "0001122"}],
-          "url": null
-        },
-        "attributes": {
-          "inAttributes": [{"name": "Ankastre Fırın"}, {"name": "Ebeveyn Banyolu"}],
-          "outAttributes": [{"name": "Otopark"}]
-        },
-        "sides": ["Kuzey", "Güney"],
-        "startDate": "2026-01-01T00:00:00.000+00:00"
-      }};
-    </script>
+    <!-- Hepsiemlak is client-rendered from /api/realties; the served HTML holds
+         no listing data. The provider reads that API (mocked in tests). -->
   </head>
   <body>
     <h1>Örnek 3+1 Satılık Daire</h1>

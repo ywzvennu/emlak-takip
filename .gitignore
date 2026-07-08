@@ -6,3 +6,6 @@ __pycache__/
 
 # never commit HAR captures (may contain session data)
 *.har
+
+# local-only real captures for verification (never committed — public repo)
+test/.live/
