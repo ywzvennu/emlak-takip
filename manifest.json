@@ -21,11 +21,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.sahibinden.com/ilan/*"],
+      "matches": [
+        "https://www.sahibinden.com/ilan/*",
+        "https://www.emlakjet.com/ilan/*"
+      ],
       "js": [
         "src/providers/registry.js",
         "src/providers/util.js",
         "src/providers/sahibinden.js",
+        "src/providers/emlakjet.js",
         "src/content/capture.js",
         "src/content/inject.js"
       ],

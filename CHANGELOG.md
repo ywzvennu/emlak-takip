@@ -43,6 +43,12 @@ carry over).
 
 ### Changed
 
+- **Emlakjet re-enabled and enriched.** Its detail HTML embeds full JSON-LD;
+  the provider now reads location from the `RealEstateListing.address` (it used
+  to come back empty because the shared helper picked the address-less `Product`
+  object) and mines attributes from `itemOffered.additionalProperty` (Isıtma,
+  Otopark, Krediye, Takas, Asansör, Balkon, Tapu, İmar Durumu…) plus the listing
+  date. Verified against real captures across konut/arsa.
 - **Devren is a transaction type**, alongside satılık/kiralık — the listing type
   is `devren-satilik` / `devren-kiralik`, and `category` stays the property type
   (konut/ticari/arsa). The type filter offers all four; the type badge shows
