@@ -28,7 +28,6 @@ const CASES = {
   "arsa-kiralik.html": {
     ilanNo: "1321745333",
     category: "arsa",
-    baseCategory: "arsa",
     type: "kiralik",
     price: 260000,
     devren: false,
@@ -36,23 +35,20 @@ const CASES = {
   "arsa-satilik.html": {
     ilanNo: "1318432286",
     category: "arsa",
-    baseCategory: "arsa",
     type: "satilik",
     price: 3600000,
     devren: false,
   },
   "konut-devren-satilik.html": {
     ilanNo: "1327091086",
-    category: "devren",
-    baseCategory: "konut",
-    type: "satilik",
+    category: "konut",
+    type: "devren-satilik",
     price: 14750000,
     devren: true,
   },
   "konut-kiralik.html": {
     ilanNo: "1327189715",
     category: "konut",
-    baseCategory: "konut",
     type: "kiralik",
     price: 18000,
     devren: false,
@@ -60,31 +56,27 @@ const CASES = {
   "konut-satilik.html": {
     ilanNo: "1322031369",
     category: "konut",
-    baseCategory: "konut",
     type: "satilik",
     price: 22000000,
     devren: false,
   },
   "ticari-devren-kiralik.html": {
     ilanNo: "1327184082",
-    category: "devren",
-    baseCategory: "ticari",
-    type: "kiralik",
+    category: "ticari",
+    type: "devren-kiralik",
     price: 800000,
     devren: true,
   },
   "ticari-devren-satilik.html": {
     ilanNo: "1323033175",
-    category: "devren",
-    baseCategory: "ticari",
-    type: "satilik",
+    category: "ticari",
+    type: "devren-satilik",
     price: 2050000,
     devren: true,
   },
   "ticari-kiralik.html": {
     ilanNo: "1190119993",
     category: "ticari",
-    baseCategory: "ticari",
     type: "kiralik",
     price: 130000,
     devren: false,
@@ -92,7 +84,6 @@ const CASES = {
   "ticari-satilik.html": {
     ilanNo: "1324217390",
     category: "ticari",
-    baseCategory: "ticari",
     type: "satilik",
     price: 14400000,
     devren: false,
@@ -139,7 +130,6 @@ for (const [file, want] of Object.entries(CASES)) {
     assert.equal(rec.provider, "sahibinden");
     assert.equal(rec.ilanNo, want.ilanNo);
     assert.equal(rec.category, want.category);
-    assert.equal(rec.baseCategory, want.baseCategory);
     assert.equal(rec.listingType, want.type);
     assert.equal(rec.devren, want.devren);
     assert.equal(rec.price && rec.price.amount, want.price);

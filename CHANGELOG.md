@@ -35,11 +35,10 @@ carry over).
 
 ### Changed
 
-- **Devren is now its own top-level category** (matching sahibinden's own
-  taxonomy) instead of a flag on konut/ticari/arsa. `category` becomes `"devren"`
-  and the underlying property type is kept as `baseCategory` (so spec lines stay
-  category-aware). "Devren" appears in the category filter; cards/popup show a
-  Devren badge plus the base-type badge. Legacy saved records migrate on read.
+- **Devren is a transaction type**, alongside satılık/kiralık — the listing type
+  is `devren-satilik` / `devren-kiralik`, and `category` stays the property type
+  (konut/ticari/arsa). The type filter offers all four; the type badge shows
+  "Devren Satılık/Kiralık" (amber). Saved records migrate on read.
 - **Typed attribute values** — alongside the raw `attributes` strings, records
   now carry `attributesTyped` (integers like Aidat/m², floats like Kaks,
   booleans for Var-Yok/Evet-Hayır fields) and `ilanTarihiTs` (the listing date

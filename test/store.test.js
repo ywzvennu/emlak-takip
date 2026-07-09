@@ -97,25 +97,44 @@ test("recordSeen only tracks saved listings and grows price history", async () =
   assert.equal(rec.price.amount, 2300000);
 });
 
-test("normalize migrates legacy devren records to the devren category", () => {
-  // old shape: devren was a flag beside the property-type category
-  const migrated = store.normalize({
+test("normalize folds devren into listingType, from either prior shape", () => {
+  // old shape: devren flag beside satilik/kiralik
+  const flag = store.normalize({
     provider: "sahibinden",
     ilanNo: "999",
     category: "ticari",
+    listingType: "kiralik",
     devren: true,
   });
-  assert.equal(migrated.category, "devren");
-  assert.equal(migrated.baseCategory, "ticari");
+  assert.equal(flag.category, "ticari");
+  assert.equal(flag.listingType, "devren-kiralik");
+  assert.equal(flag.devren, true);
+
+  // interim shape: category:"devren" + baseCategory
+  const interim = store.normalize({
+    provider: "sahibinden",
+    ilanNo: "1000",
+    category: "devren",
+    baseCategory: "ticari",
+    listingType: "satilik",
+    devren: true,
+  });
+  assert.equal(interim.category, "ticari");
+  assert.equal(interim.listingType, "devren-satilik");
+  assert.equal(interim.devren, true);
+  assert.ok(!("baseCategory" in interim));
 
   // non-devren records are untouched
   const plain = store.normalize({
     provider: "sahibinden",
-    ilanNo: "1000",
+    ilanNo: "1001",
     category: "konut",
+    listingType: "satilik",
     devren: false,
   });
   assert.equal(plain.category, "konut");
+  assert.equal(plain.listingType, "satilik");
+  assert.equal(plain.devren, false);
 });
 
 test("markRemoved flags a saved listing without touching its status", async () => {

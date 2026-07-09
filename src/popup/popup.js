@@ -39,28 +39,19 @@ function render(payload, saved) {
   $("title").textContent = payload.title || "İlan";
 
   let badgeHtml = "";
-  if (payload.category) {
-    const cls = payload.category === "devren" ? "badge devren" : "badge";
-    badgeHtml += `<span class="${cls}">${categoryLabel(payload.category)}</span>`;
+  if (payload.category)
+    badgeHtml += `<span class="badge">${categoryLabel(payload.category)}</span>`;
+  if (payload.listingType) {
+    const cls = payload.devren ? "badge devren" : "badge";
+    badgeHtml += `<span class="${cls}">${typeLabel(payload.listingType)}</span>`;
   }
-  if (
-    payload.category === "devren" &&
-    payload.baseCategory &&
-    payload.baseCategory !== "diger"
-  )
-    badgeHtml += `<span class="badge">${categoryLabel(payload.baseCategory)}</span>`;
-  if (payload.listingType)
-    badgeHtml += `<span class="badge">${typeLabel(payload.listingType)}</span>`;
   if (payload.expired)
     badgeHtml += `<span class="badge removed">${t("badgeRemoved")}</span>`;
   $("badges").innerHTML = badgeHtml;
 
   $("price").textContent = fmtPrice(payload.price);
   $("loc").textContent = payload.location ? payload.location.raw || "" : "";
-  $("specs").textContent = specLine(
-    payload.attributes,
-    payload.baseCategory || payload.category
-  );
+  $("specs").textContent = specLine(payload.attributes, payload.category);
 
   const c = payload.contact;
   if (c) {
