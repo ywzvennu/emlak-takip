@@ -162,7 +162,8 @@
       return U.text(U.q(doc, SELECTORS.title)) || U.ogTitle(doc) || doc.title;
     },
 
-    category(doc, url) {
+    // The property type (konut/ticari/arsa) irrespective of devren.
+    baseCategory(doc, url) {
       const m = slugMatch(url);
       if (m) {
         if (IS_YERI_RE.test(m[1])) return "ticari";
@@ -170,6 +171,12 @@
           if (CATEGORIES[p]) return CATEGORIES[p];
       }
       return "diger";
+    },
+
+    // Devren (business-transfer) is its own top-level category on sahibinden;
+    // the underlying property type is kept as baseCategory.
+    category(doc, url) {
+      return this.devren(doc, url) ? "devren" : this.baseCategory(doc, url);
     },
 
     listingType(doc, url) {

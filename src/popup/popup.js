@@ -38,22 +38,29 @@ function render(payload, saved) {
   $("thumb").style.display = payload.thumbnail ? "" : "none";
   $("title").textContent = payload.title || "İlan";
 
-  const badges = [];
-  if (payload.category) badges.push(categoryLabel(payload.category));
-  if (payload.listingType) badges.push(typeLabel(payload.listingType));
-  let badgeHtml = badges
-    .filter(Boolean)
-    .map((b) => `<span class="badge">${b}</span>`)
-    .join("");
-  if (payload.devren)
-    badgeHtml += `<span class="badge devren">${t("badgeDevren")}</span>`;
+  let badgeHtml = "";
+  if (payload.category) {
+    const cls = payload.category === "devren" ? "badge devren" : "badge";
+    badgeHtml += `<span class="${cls}">${categoryLabel(payload.category)}</span>`;
+  }
+  if (
+    payload.category === "devren" &&
+    payload.baseCategory &&
+    payload.baseCategory !== "diger"
+  )
+    badgeHtml += `<span class="badge">${categoryLabel(payload.baseCategory)}</span>`;
+  if (payload.listingType)
+    badgeHtml += `<span class="badge">${typeLabel(payload.listingType)}</span>`;
   if (payload.expired)
     badgeHtml += `<span class="badge removed">${t("badgeRemoved")}</span>`;
   $("badges").innerHTML = badgeHtml;
 
   $("price").textContent = fmtPrice(payload.price);
   $("loc").textContent = payload.location ? payload.location.raw || "" : "";
-  $("specs").textContent = specLine(payload.attributes, payload.category);
+  $("specs").textContent = specLine(
+    payload.attributes,
+    payload.baseCategory || payload.category
+  );
 
   const c = payload.contact;
   if (c) {

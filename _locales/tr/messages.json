@@ -88,9 +88,6 @@
   "sortIlanDate": { "message": "İlan tarihi (yeni → eski)" },
   "sortUpdated": { "message": "Son güncelleme" },
 
-  "badgeDevren": { "message": "Devren" },
-  "filterDevren": { "message": "Devren" },
-  "filterDevrenTip": { "message": "Yalnızca devren ilanları göster" },
   "badgeRemoved": { "message": "Yayından kaldırıldı" },
   "filterRemoved": { "message": "Kaldırılanlar" },
   "filterRemovedTip": {
@@ -99,6 +96,7 @@
   "catKonut": { "message": "Konut" },
   "catTicari": { "message": "Ticari" },
   "catArsa": { "message": "Arsa" },
+  "catDevren": { "message": "Devren" },
   "catDiger": { "message": "Diğer" },
   "typeSatilik": { "message": "Satılık" },
   "typeKiralik": { "message": "Kiralık" },

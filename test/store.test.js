@@ -97,6 +97,27 @@ test("recordSeen only tracks saved listings and grows price history", async () =
   assert.equal(rec.price.amount, 2300000);
 });
 
+test("normalize migrates legacy devren records to the devren category", () => {
+  // old shape: devren was a flag beside the property-type category
+  const migrated = store.normalize({
+    provider: "sahibinden",
+    ilanNo: "999",
+    category: "ticari",
+    devren: true,
+  });
+  assert.equal(migrated.category, "devren");
+  assert.equal(migrated.baseCategory, "ticari");
+
+  // non-devren records are untouched
+  const plain = store.normalize({
+    provider: "sahibinden",
+    ilanNo: "1000",
+    category: "konut",
+    devren: false,
+  });
+  assert.equal(plain.category, "konut");
+});
+
 test("markRemoved flags a saved listing without touching its status", async () => {
   // no-op when the listing isn't saved
   let res = await store.markRemoved("sahibinden:12345");
