@@ -9,6 +9,14 @@ carry over).
 
 ### Added
 
+- **Price-pool backend** (`server/`) — a zero-dependency Node service
+  (`node:http` + `node:sqlite`) that ingests bare price observations
+  (`{key, amount, currency, at}` — no PII) via `POST /v1/observations` and
+  serves the merged, multi-contributor price history per listing via
+  `POST /v1/history`, with a distinct-observer count per price point.
+  Anonymous + client `contributorId`, payload validation, and per-IP rate
+  limiting. Client wiring, auth and anti-poisoning are deferred. See
+  `server/README.md`.
 - **Provider architecture** — a pluggable registry where every provider
   implements the same named field methods (`ilanNo`, `title`, `price`,
   `location`, `geo`, `attributes`, `features`, `contact`, `description`,

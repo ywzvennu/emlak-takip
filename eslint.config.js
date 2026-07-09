@@ -36,4 +36,18 @@ export default [
       },
     },
   },
+  {
+    // Backend service (Node, ESM).
+    files: ["server/**/*.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      "no-unused-vars": ["error", { args: "none" }],
+    },
+  },
 ];
