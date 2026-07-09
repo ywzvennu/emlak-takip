@@ -685,7 +685,9 @@ function wireGrid() {
 
 function updateSelCount() {
   $("#selCount").textContent = t("selectedCount", String(state.selected.size));
-  $("#deleteSelected").disabled = state.selected.size === 0;
+  const none = state.selected.size === 0;
+  $("#deleteSelected").disabled = none;
+  $("#deselectAll").disabled = none;
 }
 
 function toggleSelect(key, card) {
@@ -718,6 +720,11 @@ function wireSelect() {
   $("#selectAll").addEventListener("click", () => {
     for (const r of sortList(applyFilters(state.all)))
       state.selected.add(r.key);
+    render();
+    updateSelCount();
+  });
+  $("#deselectAll").addEventListener("click", () => {
+    state.selected.clear();
     render();
     updateSelCount();
   });

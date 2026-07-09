@@ -58,6 +58,7 @@
   "noPriceHistory": { "message": "No price history." },
   "selectModeBtn": { "message": "Delete…" },
   "selectAll": { "message": "Select all" },
+  "deselectAll": { "message": "Deselect all" },
   "deleteSelected": { "message": "Delete selected" },
   "cancelSelect": { "message": "Cancel" },
   "selectedCount": {
