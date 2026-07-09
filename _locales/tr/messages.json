@@ -56,6 +56,7 @@
   "noPriceHistory": { "message": "Fiyat geçmişi yok." },
   "selectModeBtn": { "message": "Sil…" },
   "selectAll": { "message": "Tümünü seç" },
+  "deselectAll": { "message": "Seçimi kaldır" },
   "deleteSelected": { "message": "Seçilenleri sil" },
   "cancelSelect": { "message": "İptal" },
   "selectedCount": {
