@@ -94,11 +94,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           break;
         }
         case "FETCH_JSON": {
-          // Providers use this to read a site's own listing API. Runs in the
-          // worker (host_permissions, no page CSP). Only known hosts (hepsiemlak
-          // reads /api/realties; sahibinden's own API kept allowed too).
-          const allowed =
-            /^https:\/\/(www\.)?(sahibinden|hepsiemlak)\.com\//.test(msg.url);
+          // Providers may use this to read a site's own listing API from the
+          // worker (host_permissions, no page CSP). No provider needs it today —
+          // hepsiemlak now reads its embedded SSR data from the DOM — but the
+          // channel stays, scoped to sahibinden's own origin.
+          const allowed = /^https:\/\/(www\.)?sahibinden\.com\//.test(msg.url);
           if (!allowed) {
             sendResponse({ ok: false, error: "host not allowed" });
             break;

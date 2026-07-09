@@ -3,11 +3,103 @@
   <head>
     <meta charset="utf-8" />
     <meta property="og:title" content="Örnek 3+1 (og)" />
+    <meta
+      property="og:image"
+      content="https://hecdn01.hemlak.com/thumb/1.jpg"
+    />
+    <link
+      rel="canonical"
+      href="https://www.hepsiemlak.com/il-a-ilce-b-mahalle-c-satilik/daire/123456-7"
+    />
     <title>Hepsiemlak</title>
-    <!-- Hepsiemlak is client-rendered from /api/realties; the served HTML holds
-         no listing data. The provider reads that API (mocked in tests). -->
+    <!-- Hepsiemlak detail pages are server-side rendered (Nuxt): the listing
+         data is embedded here (.property-spec-table + JSON-LD + __NUXT__), so
+         the provider reads it from the DOM with no network. -->
+    <script type="application/ld+json">
+      {
+        "@type": "RealEstateListing",
+        "name": "Örnek 3+1 Satılık Daire",
+        "about": {
+          "@type": "Residence",
+          "image": [
+            "https://hecdn01.hemlak.com/ds01/a/1.jpg",
+            "https://hecdn01.hemlak.com/ds01/a/2.jpg"
+          ]
+        }
+      }
+    </script>
+    <script>
+      window.__NUXT__ = (function (a) {
+        return {
+          data: {
+            mainCategory: { id: 1000010100, name: "Konut" },
+            mapLocation: { lat: 41.0086, lon: 28.9802 },
+          },
+        };
+      })();
+    </script>
   </head>
   <body>
-    <h1>Örnek 3+1 Satılık Daire</h1>
+    <h1 class="detail-title">Örnek 3+1 Satılık Daire</h1>
+    <div class="detail-info-price-wrapper">
+      <p class="fz24-text price">24.100.000 TL</p>
+    </div>
+    <div class="detail-info-location">
+      <div>İl A</div>
+      <div>İlçe B</div>
+      <div>Mahalle C</div>
+    </div>
+    <div class="firm-card-detail">
+      <span class="firm-user-name"
+        >Ad Soyad Mesleki Yeterlilik Belgesine Sahiptir</span
+      >
+      <span class="firm-name">Örnek Emlak Ofisi</span>
+      <a href="tel:+905550001122">0555 000 11 22</a>
+    </div>
+    <table class="property-spec-table">
+      <tbody>
+        <tr>
+          <th><div class="tooltip-wrapper">İlan no</div></th>
+          <td><span class="value-txt">123456-7</span></td>
+        </tr>
+        <tr>
+          <th><div class="tooltip-wrapper">Son Güncelleme</div></th>
+          <td><time datetime="2026/07/01">01/07/2026</time></td>
+        </tr>
+        <tr>
+          <th><div class="tooltip-wrapper">İlan Durumu</div></th>
+          <td><a href="/satilik">Satılık</a></td>
+        </tr>
+        <tr>
+          <th><div class="tooltip-wrapper">Konut Tipi</div></th>
+          <td><span class="value-txt">Daire</span></td>
+        </tr>
+        <tr>
+          <th><div class="tooltip-wrapper">Oda Sayısı</div></th>
+          <td><span class="value-txt">3 + 1</span></td>
+        </tr>
+        <tr>
+          <th><div class="tooltip-wrapper">Banyo Sayısı</div></th>
+          <td><span class="value-txt">1</span></td>
+        </tr>
+        <tr>
+          <th><div class="tooltip-wrapper">Brüt / Net M2</div></th>
+          <td><span class="value-txt">130 m2 / 117 m2</span></td>
+        </tr>
+        <tr>
+          <th>
+            <div class="tooltip-wrapper">Isınma Ti... Isınma Tipi</div>
+          </th>
+          <td><span class="value-txt">Kombi</span></td>
+        </tr>
+        <tr>
+          <th><div class="tooltip-wrapper">Bina Yaşı</div></th>
+          <td><span class="value-txt">1 Yaşında</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="description-content">
+      Örnek açıklama: geniş ve ferah 3+1 daire.
+    </div>
   </body>
 </html>
