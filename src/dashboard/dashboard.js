@@ -24,7 +24,6 @@ const state = {
     status: "",
     tag: "",
     q: "",
-    devren: false,
     removed: false,
   },
   sort: "savedAt-desc",
@@ -92,6 +91,23 @@ function contactLine(c) {
     );
   }
   return parts.join(" · ");
+}
+
+// Category (Devren shown amber) + base property type for devren + type +
+// removed. Labels are localized constants, so no escaping needed.
+function badgesHtml(r) {
+  const spans = [];
+  if (r.category) {
+    const cls = r.category === "devren" ? "badge devren" : "badge";
+    spans.push(`<span class="${cls}">${categoryLabel(r.category)}</span>`);
+  }
+  if (r.category === "devren" && r.baseCategory && r.baseCategory !== "diger")
+    spans.push(`<span class="badge">${categoryLabel(r.baseCategory)}</span>`);
+  if (r.listingType)
+    spans.push(`<span class="badge">${typeLabel(r.listingType)}</span>`);
+  if (r.removed)
+    spans.push(`<span class="badge removed">${t("badgeRemoved")}</span>`);
+  return spans.join("");
 }
 
 function priceDelta(record) {
@@ -163,12 +179,11 @@ function rebuildFilters() {
 // ---------- filtering / sorting ----------
 
 function applyFilters(list) {
-  const { category, type, status, tag, q, devren, removed } = state.filters;
+  const { category, type, status, tag, q, removed } = state.filters;
   const needle = q.trim().toLowerCase();
   return list.filter((r) => {
     if (category && r.category !== category) return false;
     if (type && r.listingType !== type) return false;
-    if (devren && !r.devren) return false;
     if (removed && !r.removed) return false;
     if (status && r.status !== status) return false;
     if (tag && !(r.tags || []).includes(tag)) return false;
@@ -178,7 +193,6 @@ function applyFilters(list) {
         r.location && r.location.raw,
         r.notes,
         (r.tags || []).join(" "),
-        r.devren ? "devren" : "",
         r.removed ? "kaldırıldı yayından removed" : "",
       ]
         .filter(Boolean)
@@ -235,8 +249,10 @@ function ensureMap() {
 function mapPopupHtml(r) {
   const cat = [
     categoryLabel(r.category),
+    r.category === "devren" && r.baseCategory && r.baseCategory !== "diger"
+      ? categoryLabel(r.baseCategory)
+      : null,
     typeLabel(r.listingType),
-    r.devren ? t("badgeDevren") : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -333,18 +349,7 @@ function buildCard(tpl, r) {
   if (r.thumbnail) img.src = r.thumbnail;
   else thumbA.classList.add("no-img");
 
-  const badges = [];
-  if (r.category) badges.push(categoryLabel(r.category));
-  if (r.listingType) badges.push(typeLabel(r.listingType));
-  let badgeHtml = badges
-    .filter(Boolean)
-    .map((b) => `<span class="badge">${b}</span>`)
-    .join("");
-  if (r.devren)
-    badgeHtml += `<span class="badge devren">${t("badgeDevren")}</span>`;
-  if (r.removed)
-    badgeHtml += `<span class="badge removed">${t("badgeRemoved")}</span>`;
-  node.querySelector(".card-badges").innerHTML = badgeHtml;
+  node.querySelector(".card-badges").innerHTML = badgesHtml(r);
   node.classList.toggle("removed", !!r.removed);
 
   const titleA = node.querySelector(".card-title");
@@ -371,7 +376,7 @@ function buildCard(tpl, r) {
   }
   node.querySelector(".card-specs").textContent = specLine(
     r.attributes,
-    r.category
+    r.baseCategory || r.category
   );
 
   const contactHtml = contactLine(r.contact);
@@ -532,10 +537,6 @@ function wireFilters() {
     state.filters.tag = e.target.value;
     render();
   });
-  $("#fDevren").addEventListener("change", (e) => {
-    state.filters.devren = e.target.checked;
-    render();
-  });
   $("#fRemoved").addEventListener("change", (e) => {
     state.filters.removed = e.target.checked;
     render();
@@ -558,12 +559,10 @@ function wireFilters() {
       status: "",
       tag: "",
       q: "",
-      devren: false,
       removed: false,
     };
     state.sort = "savedAt-desc";
     $("#search").value = "";
-    $("#fDevren").checked = false;
     $("#fRemoved").checked = false;
     rebuildFilters();
     render();
@@ -765,6 +764,7 @@ function toCsv(list) {
     "ilanNo",
     "title",
     "category",
+    "baseCategory",
     "listingType",
     "devren",
     "priceAmount",
@@ -800,6 +800,7 @@ function toCsv(list) {
       r.ilanNo,
       r.title,
       r.category,
+      r.baseCategory || "",
       r.listingType,
       r.devren ? "1" : "",
       r.price ? r.price.amount : "",

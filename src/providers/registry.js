@@ -13,6 +13,7 @@
   const FIELDS = [
     "title",
     "category",
+    "baseCategory",
     "listingType",
     "devren",
     "price",
@@ -37,7 +38,7 @@
     if (field === "attributesTyped") return {};
     if (field === "location")
       return { il: null, ilce: null, mahalle: null, raw: null };
-    if (field === "category") return "diger";
+    if (field === "category" || field === "baseCategory") return "diger";
     if (field === "devren") return false;
     if (field === "expired") return false;
     return null;

@@ -23,7 +23,7 @@ export const STATUS_VALUES = [
   "arandi",
   "elendi",
 ];
-export const CATEGORY_VALUES = ["konut", "ticari", "arsa", "diger"];
+export const CATEGORY_VALUES = ["konut", "ticari", "arsa", "devren", "diger"];
 export const TYPE_VALUES = ["satilik", "kiralik"];
 
 const DEFAULT_PROVIDER = "sahibinden";
@@ -36,11 +36,24 @@ function recordKey(rec) {
   return rec.key || keyOf(rec.provider, rec.ilanNo);
 }
 
-// Backfill provider/key on legacy records so old data keeps working.
+// Backfill provider/key on legacy records so old data keeps working. Also
+// promotes older devren records (a flag beside category) to the current model
+// where devren is its own category and the property type lives in baseCategory.
 export function normalize(rec) {
   if (!rec) return rec;
   const provider = rec.provider || DEFAULT_PROVIDER;
-  return { ...rec, provider, key: rec.key || keyOf(provider, rec.ilanNo) };
+  let { category, baseCategory } = rec;
+  if (rec.devren && category !== "devren") {
+    baseCategory = baseCategory || category || "diger";
+    category = "devren";
+  }
+  return {
+    ...rec,
+    provider,
+    category,
+    baseCategory,
+    key: rec.key || keyOf(provider, rec.ilanNo),
+  };
 }
 
 export function normalizeList(list) {
@@ -255,6 +268,7 @@ export async function upsert(payload) {
     url: payload.url ?? existing.url,
     slug: payload.slug ?? existing.slug,
     category: payload.category ?? existing.category,
+    baseCategory: payload.baseCategory ?? existing.baseCategory,
     listingType: payload.listingType ?? existing.listingType,
     devren: payload.devren ?? existing.devren,
     location: payload.location ?? existing.location,
