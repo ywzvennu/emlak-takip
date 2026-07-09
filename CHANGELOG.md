@@ -43,6 +43,11 @@ carry over).
 
 ### Changed
 
+- **Hepsiemlak re-enabled.** Back in the manifest content scripts; the worker's
+  API allow-list and host permissions include hepsiemlak again (its provider
+  reads `/api/realties` via the worker). Restored SPA URL-change handling in the
+  content script (poll + popstate) so the re-enabled SPA providers
+  (hepsiemlak/emlakjet) re-capture on client-side navigation.
 - **Emlakjet re-enabled and enriched.** Its detail HTML embeds full JSON-LD;
   the provider now reads location from the `RealEstateListing.address` (it used
   to come back empty because the shared helper picked the address-less `Product`
