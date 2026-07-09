@@ -65,12 +65,13 @@ const CATEGORY_MSG = {
   konut: "catKonut",
   ticari: "catTicari",
   arsa: "catArsa",
-  devren: "catDevren",
   diger: "catDiger",
 };
 const TYPE_MSG = {
   satilik: "typeSatilik",
   kiralik: "typeKiralik",
+  "devren-satilik": "typeDevrenSatilik",
+  "devren-kiralik": "typeDevrenKiralik",
 };
 const STATUS_MSG = {
   kaydedildi: "statusKaydedildi",

@@ -93,18 +93,16 @@ function contactLine(c) {
   return parts.join(" · ");
 }
 
-// Category (Devren shown amber) + base property type for devren + type +
-// removed. Labels are localized constants, so no escaping needed.
+// Category + transaction type (devren types shown amber) + removed. Labels are
+// localized constants, so no escaping needed.
 function badgesHtml(r) {
   const spans = [];
-  if (r.category) {
-    const cls = r.category === "devren" ? "badge devren" : "badge";
-    spans.push(`<span class="${cls}">${categoryLabel(r.category)}</span>`);
+  if (r.category)
+    spans.push(`<span class="badge">${categoryLabel(r.category)}</span>`);
+  if (r.listingType) {
+    const cls = r.devren ? "badge devren" : "badge";
+    spans.push(`<span class="${cls}">${typeLabel(r.listingType)}</span>`);
   }
-  if (r.category === "devren" && r.baseCategory && r.baseCategory !== "diger")
-    spans.push(`<span class="badge">${categoryLabel(r.baseCategory)}</span>`);
-  if (r.listingType)
-    spans.push(`<span class="badge">${typeLabel(r.listingType)}</span>`);
   if (r.removed)
     spans.push(`<span class="badge removed">${t("badgeRemoved")}</span>`);
   return spans.join("");
@@ -247,13 +245,7 @@ function ensureMap() {
 }
 
 function mapPopupHtml(r) {
-  const cat = [
-    categoryLabel(r.category),
-    r.category === "devren" && r.baseCategory && r.baseCategory !== "diger"
-      ? categoryLabel(r.baseCategory)
-      : null,
-    typeLabel(r.listingType),
-  ]
+  const cat = [categoryLabel(r.category), typeLabel(r.listingType)]
     .filter(Boolean)
     .join(" · ");
   const loc = (r.location && r.location.raw) || "";
@@ -376,7 +368,7 @@ function buildCard(tpl, r) {
   }
   node.querySelector(".card-specs").textContent = specLine(
     r.attributes,
-    r.baseCategory || r.category
+    r.category
   );
 
   const contactHtml = contactLine(r.contact);
@@ -764,7 +756,6 @@ function toCsv(list) {
     "ilanNo",
     "title",
     "category",
-    "baseCategory",
     "listingType",
     "devren",
     "priceAmount",
@@ -800,7 +791,6 @@ function toCsv(list) {
       r.ilanNo,
       r.title,
       r.category,
-      r.baseCategory || "",
       r.listingType,
       r.devren ? "1" : "",
       r.price ? r.price.amount : "",

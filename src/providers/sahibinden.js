@@ -162,8 +162,7 @@
       return U.text(U.q(doc, SELECTORS.title)) || U.ogTitle(doc) || doc.title;
     },
 
-    // The property type (konut/ticari/arsa) irrespective of devren.
-    baseCategory(doc, url) {
+    category(doc, url) {
       const m = slugMatch(url);
       if (m) {
         if (IS_YERI_RE.test(m[1])) return "ticari";
@@ -173,20 +172,22 @@
       return "diger";
     },
 
-    // Devren (business-transfer) is its own top-level category on sahibinden;
-    // the underlying property type is kept as baseCategory.
-    category(doc, url) {
-      return this.devren(doc, url) ? "devren" : this.baseCategory(doc, url);
-    },
-
+    // Transaction type. Devren (business-transfer) is part of this dimension,
+    // alongside satılık/kiralık: "devren-satilik" / "devren-kiralik".
     listingType(doc, url) {
       const m = slugMatch(url);
-      if (m) for (const p of m[1].split("-")) if (TYPES[p]) return TYPES[p];
-      return null;
+      let base = null;
+      if (m)
+        for (const p of m[1].split("-"))
+          if (TYPES[p]) {
+            base = TYPES[p];
+            break;
+          }
+      if (!base) return null;
+      return this.devren(doc, url) ? `devren-${base}` : base;
     },
 
-    // Business-transfer listing (devren): the going concern / lease is handed
-    // over. Orthogonal to category+type, flagged by a "devren" slug token.
+    // Business-transfer listing (devren), flagged by a "devren" slug token.
     devren(doc, url) {
       const m = slugMatch(url);
       return !!(m && /(?:^|-)devren(?:-|$)/.test(m[1]));
