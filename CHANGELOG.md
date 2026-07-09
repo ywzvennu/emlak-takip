@@ -43,11 +43,19 @@ carry over).
 
 ### Changed
 
-- **Hepsiemlak re-enabled.** Back in the manifest content scripts; the worker's
-  API allow-list and host permissions include hepsiemlak again (its provider
-  reads `/api/realties` via the worker). Restored SPA URL-change handling in the
-  content script (poll + popstate) so the re-enabled SPA providers
-  (hepsiemlak/emlakjet) re-capture on client-side navigation.
+- **Hepsiemlak reads embedded SSR data (no network).** Its detail pages are
+  server-side rendered (Nuxt), so the provider now reads the listing straight
+  from the served HTML — the visible `.property-spec-table`, the
+  `RealEstateListing` JSON-LD, and the `window.__NUXT__` state (the authoritative
+  `mainCategory`, since slugs like `imarli-konut`/`bahce` (arsa) or
+  `genel`/`kuafor-guzellik-merkezi` (ticari) can't be keyword-guessed). This
+  drops the old `/api/realties` fetch, which was Cloudflare-gated to non-browser
+  requests and unverifiable offline; hepsiemlak's worker fetch allow-list entry
+  and host permission are removed. Devren is read from the url type segment
+  (`devren-satilik`/`devren-kiralik`, ticari only). Verified against real
+  captures across konut/ticari/arsa × satılık/kiralık/devren. Restored SPA
+  URL-change handling in the content script (poll + popstate) so the re-enabled
+  SPA providers (hepsiemlak/emlakjet) re-capture on client-side navigation.
 - **Emlakjet re-enabled and enriched.** Its detail HTML embeds full JSON-LD;
   the provider now reads location from the `RealEstateListing.address` (it used
   to come back empty because the shared helper picked the address-less `Product`

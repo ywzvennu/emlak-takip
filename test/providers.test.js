@@ -25,14 +25,6 @@ await import("../src/providers/hepsiemlak.js");
 await import("../src/providers/emlakjet.js");
 await import("../src/content/capture.js");
 const R = globalThis.EmlakTakip;
-const U = globalThis.EmlakTakipUtil;
-
-// Offline: the hepsiemlak provider reads its /api/realties endpoint. Feed a
-// synthetic response instead of hitting the network, so the API-mapping is
-// verified without touching the live site.
-const HEPSI_API = JSON.parse(fixtureHtml("hepsiemlak-api.json"));
-U.fetchJson = async (url) =>
-  /hepsiemlak\.com\/api\/realties\//.test(url) ? HEPSI_API : null;
 
 // Assemble a record the way the content script does. buildRecord is async
 // (a provider may pull from an embedded-state source before the field methods).
@@ -159,40 +151,46 @@ test("sahibinden: expired() flags a removed page, never a live one", () => {
   assert.equal(P.expired(live), false);
 });
 
-test("hepsiemlak: maps its /api/realties response (offline)", async () => {
+test("hepsiemlak: reads the embedded SSR data (DOM, no network)", async () => {
   const { rec } = await build(HEPSI_URL, "hepsiemlak-ilan.html");
   assert.equal(rec.provider, "hepsiemlak");
-  assert.equal(rec.ilanNo, "123456");
-  assert.equal(rec.key, "hepsiemlak:123456");
+  // the full "<num>-<num>" id — both parts matter (147709-91 vs 147709-93)
+  assert.equal(rec.ilanNo, "123456-7");
+  assert.equal(rec.key, "hepsiemlak:123456-7");
   assert.equal(rec.title, "Örnek 3+1 Satılık Daire");
+  // category from the __NUXT__ mainCategory name
   assert.equal(rec.category, "konut");
   assert.equal(rec.listingType, "satilik");
+  assert.equal(rec.devren, false);
   assert.equal(rec.price.amount, 24100000);
   assert.equal(rec.price.currency, "TL");
   assert.equal(rec.location.il, "İl A");
   assert.equal(rec.location.ilce, "İlçe B");
   assert.equal(rec.location.mahalle, "Mahalle C");
-  assert.equal(rec.geo.source, "site");
+  // geo from __NUXT__ mapLocation (when serialized as a literal)
+  assert.equal(rec.geo.source, "nuxt");
   assert.ok(Math.abs(rec.geo.lat - 41.0086) < 1e-6);
+  // attributes from the .property-spec-table; the "m2" unit doesn't corrupt the
+  // number and the truncated+full tooltip label is de-duplicated
+  assert.equal(rec.attributes["m² (Brüt)"], "130");
   assert.equal(rec.attributes["m² (Net)"], "117");
   assert.equal(rec.attributes["Oda Sayısı"], "3+1");
   assert.equal(rec.attributes["Isıtma"], "Kombi");
-  assert.equal(rec.attributes["Bina Yaşı"], "1");
-  assert.deepEqual(rec.features, {
-    "İç Özellikler": ["Ankastre Fırın", "Ebeveyn Banyolu"],
-    "Dış Özellikler": ["Otopark"],
-    Cephe: ["Kuzey", "Güney"],
-  });
+  assert.equal(rec.attributes["Bina Yaşı"], "1 Yaşında");
+  assert.equal(rec.attributesTyped["m² (Net)"], 117);
+  // contact: agency + agent name (cert blurb stripped) + normalized phone
+  assert.equal(rec.contact.type, "emlak_ofisi");
   assert.equal(rec.contact.agency, "Örnek Emlak Ofisi");
-  assert.equal(rec.contact.name, "Ad Soyad");
-  assert.equal(rec.contact.phone, "+905550001122");
+  assert.equal(rec.contact.agentName, "Ad Soyad");
+  assert.equal(rec.contact.phone, "5550001122");
   assert.match(rec.description, /Örnek açıklama/);
+  assert.equal(rec.ilanTarihiTs, Date.UTC(2026, 6, 1));
   assert.deepEqual(rec.photos, [
-    "https://image-cdn.hepsiemlak.com/ds01/a/1.jpg",
-    "https://image-cdn.hepsiemlak.com/ds01/a/2.jpg",
+    "https://hecdn01.hemlak.com/ds01/a/1.jpg",
+    "https://hecdn01.hemlak.com/ds01/a/2.jpg",
   ]);
-  // full source payload retained
-  assert.equal(rec.raw.listingId, "123456-7");
+  // raw keeps the page's meta + JSON-LD signals
+  assert.ok(rec.raw && rec.raw.jsonld && rec.raw.jsonld.length >= 1);
 });
 
 test("emlakjet: record from og-meta + breadcrumb", async () => {
@@ -214,6 +212,6 @@ test("capture dispatcher stamps provider + composite key (async)", async () => {
   globalThis.location = dom.window.location;
   const rec = await globalThis.EmlakTakipCapture.captureIlan();
   assert.equal(rec.provider, "hepsiemlak");
-  assert.equal(rec.key, "hepsiemlak:123456");
+  assert.equal(rec.key, "hepsiemlak:123456-7");
   assert.equal(globalThis.EmlakTakipCapture.isIlanDetail(), true);
 });
