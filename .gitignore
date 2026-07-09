@@ -9,3 +9,6 @@ __pycache__/
 
 # local-only real captures for verification (never committed — public repo)
 test/.live/
+
+# backend database files (sqlite + WAL sidecars)
+server/data/

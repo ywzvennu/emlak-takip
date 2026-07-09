@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "node --test",
+    "test": "node --experimental-sqlite --test",
+    "server": "node --experimental-sqlite server/index.js",
     "package": "node scripts/package.mjs",
     "version:set": "node scripts/set-version.mjs",
     "verify:live": "node scripts/verify-live.mjs"
